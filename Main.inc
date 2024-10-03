@@ -9,6 +9,7 @@
         include         "api\opengl.inc"
 
         include         "Modules/Init/Init.asm"
+        include         "Modules/Data/LaunchOptions.inc"
 
 data import
 
@@ -18,3 +19,13 @@ data import
                 opengl32,       "OPENGL32.DLL"
 
 end data
+
+        wndClass        WNDCLASS                0, WindowProc, 0, 0, 0, 0, 0, 0, 0, className
+        pfd             PIXELFORMATDESCRIPTOR   sizeof.PIXELFORMATDESCRIPTOR, 1, PFD_FLAGS, PFD_TYPE_RGBA, COLOR_DEPTH,\
+                                                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,\
+                                                COLOR_DEPTH, 0, 0, PFD_MAIN_PLANE, 0, PFD_MAIN_PLANE
+
+        className       db      "Tanks-Bleens",0h
+
+        hdc             dd      ?
+        clientRect      RECT
