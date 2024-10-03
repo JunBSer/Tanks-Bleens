@@ -4,45 +4,68 @@ modules:
 -3)init
 -4)Data(import+struct)
 -5)Window(menu+...)
-
+-------------------------------------------------------------------------------------
 entities:
--player
+-players
 ^      ^
 | into |
--tank
+-tanks
 ?-server?
 -AI(bots | also include player's parts)
-
-
+-drawer
+-------------------------------------------------------------------------------------
 Model:
 User -- open the game
 Main menu:
 -start game  --> configure bots and players (multiplayer, singleplayer)
 -params
-
+-------------------------------------------------------------------------------------
 Game description:
 :Tanks:
 Change position, shoot, give\take a damage, destroys\kill, respawn;
-
+-------------------------------------------------------------------------------------
 Tank Model:
 coords, angles(rotation vectors)
 
 player model;
 bool Alive\not
 connection with a tank(probably pointer)
-
+-------------------------------------------------------------------------------------
 Draw processing:
 Find coords of each point (angles and curr position)
 ---Map:
 	-texturing;
 	-make landscape;
 	-lights and colors
-	
+-------------------------------------------------------------------------------------	
 Phisics processing:
 -Collisions;
 -gravity;
 -speed;
 -angles;
 (probably shooting);
+-------------------------------------------------------------------------------------
+Statistics window
+-kills;
+-deaths;
+-points;  
+-------------------------------------------------------------------------------------
+!!!!!!!Tasks specification !!!!!!!!(in a future will be decomposed)
+-Create map(texturing+lights)
+*landscape
+*boxes
+*pits
+*ramps
+-Create tank and draw
+-configure tank's movement
+-let tank to shoot
+-create bots
+-create start menu 
+(look above top)
+-create stats window
+(look above)
+-Mb something from Roma(but its not necessary)
 
-  
+
+
+
