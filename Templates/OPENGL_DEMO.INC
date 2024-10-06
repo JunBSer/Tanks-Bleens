@@ -11,6 +11,7 @@ entry   WinMain
         include         "Mesh.inc"
         include         "Vector.inc"
         include         "Matrix.inc"
+        include         "File\File.inc"
 
 macro JumpIf value, label
 {
@@ -24,6 +25,8 @@ macro JumpIf value, label
         VK_S            =       0x53
         VK_A            =       0x41
         VK_D            =       0x44
+        VK_E            =       0x45
+        VK_Q            =       0x51
 
 
         true            =       1

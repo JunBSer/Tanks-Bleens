@@ -33,7 +33,7 @@
         include         "Mesh.asm"
         include         "Vector.asm"
         include         "Matrix.asm"
-
+        include         ".\File\File.asm"
 proc WinMain
 
         locals
@@ -119,14 +119,12 @@ proc MoveHead
      sub        eax,[cursorPos + POINT.x]
 
      mov        [cursorPos + POINT.x],eax
-     ;sar       [cursorPos + POINT.x],8
 
 
      mov        eax, [CursorPos_y]
      sub        eax,[cursorPos + POINT.y]
 
      mov        [cursorPos + POINT.y],eax
-     ;sar        [cursorPos + POINT.y],8
 
 
      fld        [zAngle]
@@ -141,18 +139,6 @@ proc MoveHead
      fld        [_5]
      fdivp
      fsubp
-    ; fcom       [_0]
-     ;jge        .SkipZero
-    ; fstp       st0
-    ; fld        [_0]
-    ; jmp        .Skip
-;.SkipZero:
- ;    fcom       [_180]
-  ;   jle        .Skip
-   ;  fstp       st0
-   ;  fld        [_180]
-
-;.Skip:
       fstp       [xAngle]
      invoke     SetCursorPos, [CursorPos_x], [CursorPos_y]
 
@@ -189,6 +175,8 @@ proc ChangeCoords uses esi,\
         JumpIf VK_S,      .PositionBACK
         JumpIf VK_A,      .PositionLEFT
         JumpIf VK_D,      .PositionRIGHT
+        JumpIf VK_E,      .PositionUP
+        JumpIf VK_Q,      .PositionDOWN
 
 
 .PositionFRONT:
@@ -231,7 +219,19 @@ proc ChangeCoords uses esi,\
         fsubr  [esi + Vector3.y]
         fstp   [esi + Vector3.y]
 
+        jmp  .Return
 
+.PositionUP:
+        fld     [speed]
+        fsubr   [esi + Vector3.z]
+        fstp    [esi + Vector3.z]
+
+        jmp  .Return
+
+.PositionDOWN:
+        fld     [speed]
+        fadd   [esi + Vector3.z]
+        fstp    [esi + Vector3.z]
 
 .Return:
 
@@ -289,3 +289,6 @@ proc Draw uses esi,\
 
         ret
 endp
+
+
+

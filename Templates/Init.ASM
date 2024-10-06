@@ -44,7 +44,9 @@ proc Init uses esi
         invoke  glHint, GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST
 
         ;stdcall Matrix.LookAt, cameraPosition, targetPosition, upVector
-        stdcall GenerateMesh,  mesh,plane, true
+
+        ;stdcall GenerateMesh,  mesh,plane, true
+        stdcall ReadModel, plane, FilePath
 
         ret
 endp
