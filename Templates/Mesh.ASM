@@ -74,7 +74,7 @@ proc GenerateMesh uses ebx esi edi,\
 
         xor     edx, edx
         mov     esi, [indices]
-        movzx   eax, byte[esi + ebx]    ; index
+        mov     eax, [esi + ebx]    ; index
         mov     edi, sizeof.Color
         mul     edi                     ; index * sizeof.Color
 

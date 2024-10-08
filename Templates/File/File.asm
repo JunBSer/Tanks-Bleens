@@ -1,28 +1,29 @@
 proc ReadModel uses ebx,\
-     resultMesh, FilePath
+     resultMesh, verticesPath, indicesPath
 
      locals
-        hFile                dd      ?          ; Descriptor of file
-        lDistanceToMove      dd      80         ; STL Header - 80 bytes
+        hFileVertices        dd      ?          ; Descriptor of file
+        hFileIndices         dd      ?          ; Descriptor of file
         TrianglesCount       dd      ?          ; is already clear
-        TriangleInfo         dd      ?          ; foreach triangle - 50 bytes (Normal, V1, V2, V3, Attr)
+        IndicesCount         dd      ?
+        TriangleVertices     dd      ?          ; is already clear
+        TriangleIndex        dd      ?
         resultVertices       dd      ?          ; is already clear
+        resultIndices        dd      ?
         resultColors         dd      ?          ; is already clear
      endl
 
      xor        ebx, ebx
-     invoke     CreateFile, [FilePath], GENERIC_READ, ebx, ebx, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, ebx
-     mov        [hFile], eax
+     invoke     CreateFile, [verticesPath], GENERIC_READ, ebx, ebx, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, ebx
+     mov        [hFileVertices], eax
 
-     invoke     SetFilePointer, [hFile], [lDistanceToMove], ebx, FILE_BEGIN
-
-     invoke     HeapAlloc, [hHeap], 8, TriangleInfoSize
-     mov        [TriangleInfo], eax
+     invoke     HeapAlloc, [hHeap], 8, sizeof.Vertex
+     mov        [TriangleVertices], eax
 
      mov        esi, [resultMesh]
      add        esi, Mesh.trianglesCount
 
-     invoke     ReadFile, [hFile], esi, 4, ebx, ebx                     ; Read count of triangles
+     invoke     ReadFile, [hFileVertices], esi, 4, ebx, ebx                     ; Read count of triangles
      mov        edx, [esi]
      mov        [TrianglesCount], edx
 
@@ -47,12 +48,10 @@ proc ReadModel uses ebx,\
      mov        ecx, [TrianglesCount]
 .CopyCycle:
      push       ecx
-     invoke     ReadFile, [hFile], [TriangleInfo], TriangleInfoSize, ebx, ebx
-     add        [TriangleInfo], 12                                                ; Skip normal vector
-
+     invoke     ReadFile, [hFileVertices], [TriangleVertices], 3 * sizeof.Vertex, ebx, ebx
 
      mov        ecx, 9
-     mov        esi, [TriangleInfo]
+     mov        esi, [TriangleVertices]
      mov        edi, [resultVertices]
      rep movsd
 
@@ -61,15 +60,114 @@ proc ReadModel uses ebx,\
      mov        edi, [resultColors]
      rep stosd
 
-     add        [resultVertices], 36
-     add        [resultColors], 36
-     sub        [TriangleInfo], 12
+     add        [resultVertices], 3 * sizeof.Vertex
+     add        [resultColors], 3 * sizeof.Vertex
      pop        ecx
      loop       .CopyCycle
+     invoke     CloseHandle, [hFileVertices]
 
-     invoke     CloseHandle, [hFile]
+     invoke     HeapFree, [hHeap], HEAP_NO_SERIALIZE, [TriangleVertices]
 
-     invoke     HeapFree, [hHeap], [TriangleInfo]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+     invoke     CreateFile, [indicesPath], GENERIC_READ, ebx, ebx, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, ebx
+     mov        [hFileIndices], eax
+
+     invoke     HeapAlloc, [hHeap], 4
+     mov        [TriangleIndex], eax
+
+     invoke     ReadFile, [hFileIndices], [TriangleIndex], 4, ebx, ebx                     ; Read count of indices
+     mov        esi, [TriangleIndex]
+     mov        edx, [esi]
+     mov        [IndicesCount], edx
+
+     xor        edx, edx                                                ; Calc size of mesh triangles
+     mov        ecx, [IndicesCount]
+     mov        eax, 4
+     mul        ecx
+
+     mov        edi, [resultMesh]
+     invoke  HeapAlloc, [hHeap], 8, eax
+     mov     [resultIndices], eax
+     mov     [edi + Mesh.indices], eax
+
+     mov        ecx, [IndicesCount]
+.CopyCycleIndices:
+     push       ecx
+     invoke     ReadFile, [hFileIndices], [TriangleIndex], 4, ebx, ebx
+
+     mov        esi, [TriangleIndex]
+     mov        edi, [resultIndices]
+     movsd
+
+     add        [resultIndices], 4
+     pop        ecx
+     loop       .CopyCycleIndices
+     invoke     CloseHandle, [hFileIndices]
+
+     invoke     HeapFree, [hHeap], HEAP_NO_SERIALIZE, [TriangleIndex]
 
      ret
+endp
+
+proc StrToFloat:
+    fldz
+    xor eax, eax
+    xor edx, edx
+    mov ecx, 0
+    mov edi, 1
+    mov ebx, 0
+
+    cmp byte [esi], '-'
+    jne .check_plus
+    mov ecx, 1
+    inc esi
+
+.check_plus:
+    cmp byte [esi], '+'
+    jne .parse_number
+    inc esi
+
+.parse_number:
+
+.next_digit:
+    cmp byte [esi], 0
+    je .end_conversion
+
+    cmp byte [esi], '.'
+    je .fraction_part
+
+    sub byte [esi], '0'
+    cmp byte [esi], 9
+    ja .end_conversion
+
+    imul eax, edi
+    add eax, [esi]
+    inc esi
+    jmp .next_digit
+
+.fraction_part:
+    inc esi
+    mov edx, 1
+    mov ebx, 1
+
+.parse_fraction:
+    cmp byte [esi], 0
+    je .end_conversion
+
+    sub byte [esi], '0'
+    cmp byte [esi], 9
+    ja .end_conversion
+
+    imul edx, edx, 10
+    push eax
+    mov eax, [esi]
+    cdq
+    idiv edx
+    pop eax
+
+    fld dword [esi]
+    fdiv dword [edx]
+    fadd dword [eax]
+    ret
 endp

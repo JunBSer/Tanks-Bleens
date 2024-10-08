@@ -1,5 +1,5 @@
-PLANE_TRIANGLES_COUNT    =        2
-PLANE_VERTICES_COUNT     =        6
+PLANE_TRIANGLES_COUNT    =        8876
+PLANE_VERTICES_COUNT     =        26628
 
 planeVertices:
         v0      dd      -3.0, -3.0,  0.0
