@@ -47,7 +47,8 @@ proc GenerateMesh uses ebx esi edi,\
 
         xor     edx, edx
         mov     esi, [indices]
-        movzx   eax, byte[esi + ebx]    ; index
+        mov     eax, [esi + ebx]    ; index
+        dec     eax
         mov     edi, sizeof.Vertex
         mul     edi                     ; index * sizeof.Vertex
 
@@ -75,6 +76,7 @@ proc GenerateMesh uses ebx esi edi,\
         xor     edx, edx
         mov     esi, [indices]
         mov     eax, [esi + ebx]    ; index
+        dec     eax
         mov     edi, sizeof.Color
         mul     edi                     ; index * sizeof.Color
 
@@ -89,20 +91,22 @@ proc GenerateMesh uses ebx esi edi,\
         mov     edi, [resultColors]
         add     edi, eax                ; resultColors + resultIndex * sizeof.Color = resultColors[resultIndex]
 
-        mov     eax, [esi + Color.r]    ; r = colors[index].r
-        mov     ecx, [esi + Color.g]    ; g = colors[index].g
-        mov     edx, [esi + Color.b]    ; b = colors[index].b
-        mov     [edi + Color.r], eax    ; resultColors[resultIndex].r = r
-        mov     [edi + Color.g], ecx    ; resultColors[resultIndex].g = g
-        mov     [edi + Color.b], edx    ; resultColors[resultIndex].b = b
+        ;mov     eax, [esi + Color.r]    ; r = colors[index].r
+        ;mov     ecx, [esi + Color.g]    ; g = colors[index].g
+        ;mov     edx, [esi + Color.b]    ; b = colors[index].b
+        mov     [edi + Color.r], 0.0;eax    ; resultColors[resultIndex].r = r
+        mov     [edi + Color.g], 0.0;ecx    ; resultColors[resultIndex].g = g
+        mov     [edi + Color.b], 0.0;edx    ; resultColors[resultIndex].b = b
 
 .DoNotCopyColors:
 
-        inc     ebx
-        inc     [resultIndex]
+        add     ebx, 4
+        add     [resultIndex], 4
 
         pop     ecx
-        loop    .CopyCycle
+        dec     ecx
+        cmp     ecx, 0
+        jne     .CopyCycle
 
         ret
 endp

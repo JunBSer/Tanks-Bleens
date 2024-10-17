@@ -45,8 +45,8 @@ proc Init uses esi
 
         ;stdcall Matrix.LookAt, cameraPosition, targetPosition, upVector
 
-        ;stdcall ReadModel, mesh, verticesFilePath, indicesFilePath
-        stdcall GenerateMesh,  mesh, plane, true
+        stdcall ReadModel, plane, FilePath
+        ;stdcall GenerateMesh,  mesh, plane, true
 
 
         ret
