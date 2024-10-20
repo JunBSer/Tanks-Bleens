@@ -268,7 +268,7 @@ proc Draw uses esi,\
 
         invoke  glVertexPointer, 3, GL_FLOAT, ebx, [esi+Mesh.vertices]
         invoke  glColorPointer, 3, GL_FLOAT, ebx, [esi+Mesh.colors]
-        invoke  glDrawArrays, GL_TRIANGLES, ebx, PLANE_VERTICES_COUNT
+        invoke  glDrawArrays, GL_TRIANGLES, ebx, [PLANE_VERTICES_COUNT]
 
 
 

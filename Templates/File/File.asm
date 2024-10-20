@@ -24,6 +24,7 @@ proc ReadModel uses ebx,\
         mov        [facesCount], edx
         mov        [verticesCount], eax
 
+        xor        edx, edx
         mov        eax, sizeof.Vertex
         mov        ecx, [verticesCount]
         mul        ecx
@@ -31,8 +32,13 @@ proc ReadModel uses ebx,\
         mov        [vertices], eax
         mov        [tempMesh + Mesh.vertices], eax
 
-        mov        eax, 3 * 4
+        xor        edx, edx
+        mov        eax, 3
         mov        ecx, [facesCount]
+        mul        ecx
+        mov        [PLANE_VERTICES_COUNT], eax
+        xor        edx, edx
+        mov        ecx, 4
         mul        ecx
         invoke     HeapAlloc, [hHeap], HEAP_ZERO_MEMORY, eax
         mov        [indices], eax
@@ -138,7 +144,10 @@ proc GetVerticesFacesCounts uses edi esi,\
 
 .CalcLoop:
         cmp     byte [edi], 'v'
+        jne     .Else
+        cmp     byte [edi + 1], ' '
         je      .IncVert
+.Else:
         cmp     byte [edi], 'f'
         jne     .SearchLF
 

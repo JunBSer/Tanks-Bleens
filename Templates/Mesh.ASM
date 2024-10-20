@@ -9,6 +9,9 @@ proc GenerateMesh uses ebx esi edi,\
                 colors          dd      ?
                 resultColors    dd      ?
                 indices         dd      ?
+
+                color           dd      1.0
+                tempColor       dd      0
         endl
 
         mov     [resultIndex], ebx
@@ -94,14 +97,21 @@ proc GenerateMesh uses ebx esi edi,\
         ;mov     eax, [esi + Color.r]    ; r = colors[index].r
         ;mov     ecx, [esi + Color.g]    ; g = colors[index].g
         ;mov     edx, [esi + Color.b]    ; b = colors[index].b
-        mov     [edi + Color.r], 0.0;eax    ; resultColors[resultIndex].r = r
-        mov     [edi + Color.g], 0.0;ecx    ; resultColors[resultIndex].g = g
-        mov     [edi + Color.b], 0.0;edx    ; resultColors[resultIndex].b = b
+        mov     eax, [color]
+        mov     [edi + Color.r], eax;eax    ; resultColors[resultIndex].r = r
+        mov     [edi + Color.g], eax;ecx    ; resultColors[resultIndex].g = g
+        mov     [edi + Color.b], eax;edx    ; resultColors[resultIndex].b = b
+
+        fild    [tempColor]
+        fstp    [color]
+        mov     eax, [tempColor]
+        xor     eax, 1
+        mov     [tempColor], eax
 
 .DoNotCopyColors:
 
         add     ebx, 4
-        add     [resultIndex], 4
+        add     [resultIndex], 1
 
         pop     ecx
         dec     ecx

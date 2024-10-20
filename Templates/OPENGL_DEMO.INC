@@ -45,7 +45,7 @@ macro JumpIf value, label
                                                 COLOR_DEPTH, 0, 0, PFD_MAIN_PLANE, 0, PFD_MAIN_PLANE
 
 
-        mesh           Mesh                    planeVertices,planeColors,planeIndices,PLANE_TRIANGLES_COUNT
+        mesh           Mesh                    ;planeVertices,planeColors,planeIndices,PLANE_TRIANGLES_COUNT
         plane          Mesh
 
 data import
