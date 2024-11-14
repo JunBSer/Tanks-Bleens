@@ -1,0 +1,5 @@
+proc    MapInit
+
+    ret
+endp
+
