@@ -61,3 +61,54 @@ proc File.LoadContent uses edi,\
 
         ret
 endp
+
+proc File.ReadModel uses ebx esi edi,\
+        resultMesh, filePath
+        locals
+                hFile           dd      ?
+                fileData        dd      ?
+                fileSize        dd      ?
+                fileMesh        dd      ?
+                tempFileMesh    dd      ?
+        endl
+
+        xor        ebx, ebx
+        invoke     CreateFile, [filePath], GENERIC_READ, ebx, ebx, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, ebx
+        mov        [hFile], eax
+        invoke     GetFileSize, [hFile], ebx
+        mov        [fileSize], eax
+        invoke     HeapAlloc, [hHeap], HEAP_ZERO_MEMORY, eax
+        mov        [fileData], eax
+        invoke     ReadFile, [hFile], [fileData], [fileSize], ebx, ebx
+        invoke     CloseHandle, [hFile]
+
+        invoke     HeapAlloc, [hHeap], HEAP_ZERO_MEMORY, sizeof.FileMesh
+        mov        [fileMesh], eax
+        stdcall    GetElementsCounts, [fileData], [fileSize], [fileMesh]
+        stdcall    FileMeshAlloc, [fileMesh]
+
+        invoke     HeapAlloc, [hHeap], HEAP_ZERO_MEMORY, sizeof.TempFileMesh
+        mov        [tempFileMesh], eax
+
+        stdcall    ParseData, [fileData], [fileSize], [fileMesh]
+        invoke     HeapFree, [hHeap], ebx, [fileData]
+
+        mov        eax, [fileMesh]
+        stdcall    TempFileMeshAlloc, [tempFileMesh], [eax + FileMesh.trianglesCount]
+        stdcall    GenerateMesh, [fileMesh], [tempFileMesh]
+        stdcall    FileMeshFree, [fileMesh]
+
+        mov        esi, [tempFileMesh]
+        mov        eax, [esi + TempFileMesh.vertices]
+        mov        ecx, [esi + TempFileMesh.normals]
+        mov        edx, [esi + TempFileMesh.textures]
+        mov        edi, [esi + TempFileMesh.verticesCount]
+
+        mov        esi, [resultMesh]
+        mov        [esi + Mesh.VBOvert], eax
+        mov        [esi + Mesh.VBOnorm], ecx
+        mov        [esi + Mesh.VBOtex], edx
+        mov        [esi + Mesh.vertexCnt], edi
+        invoke     HeapFree, [hHeap], ebx, [tempFileMesh]
+        ret
+endp
