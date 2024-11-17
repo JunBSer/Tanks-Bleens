@@ -12,6 +12,7 @@
         include         "Macro/Macros.inc"
 
         include         "Modules/Data/FileOps/File.asm"
+        include         "Modules/Data/FileOps/File.inc"
         
         include         "Modules/Init/Init.asm"
         
