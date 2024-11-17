@@ -8,9 +8,14 @@
         include         "api\gdi32.inc"
         include         "api\opengl.inc"
 
-        include         "Modules/Init/Init.asm"
         include         "Modules/Data/LaunchOptions.inc"
+        include         "Macro/Macros.inc"
 
+        include         "Modules/Data/FileOps/File.asm"
+        
+        include         "Modules/Init/Init.asm"
+        
+        include         "Modules/GraphicalEngine/Draw.asm"      
 data import
 
         library kernel32,       "KERNEL32.DLL",\
@@ -19,6 +24,9 @@ data import
                 opengl32,       "OPENGL32.DLL"
 
 end data
+        true            =               1
+        false           =               0
+
 
         wndClass        WNDCLASS                0, WindowProc, 0, 0, 0, 0, 0, 0, 0, className
         pfd             PIXELFORMATDESCRIPTOR   sizeof.PIXELFORMATDESCRIPTOR, 1, PFD_FLAGS, PFD_TYPE_RGBA, COLOR_DEPTH,\
