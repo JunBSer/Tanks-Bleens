@@ -1,6 +1,6 @@
-include                 "./FileProc/FileGenerateMesh.asm"
-include                 "./FileProc/FileMemory.asm"
-include                 "./FileProc/FileParse.asm"
+include                 "./FReadObjProc/FileGenerateMesh.asm"
+include                 "./FReadObjProc/FileMemory.asm"
+include                 "./FReadObjProc/FileParse.asm"
 
 FilePath                db      '.\', 0
 

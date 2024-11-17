@@ -33,14 +33,14 @@ proc Glext.InitShaders  uses ebx
         invoke  glDeleteProgram, [program]
 
 @@:
-        stdcall Glext.LoadShader, vrtxShaderFile, GL_VERTEX_SHADER
+        stdcall Glext.LoadShader, vrtxShaderFilePath, GL_VERTEX_SHADER
         mov     [vertexShader],eax
 
 
         cmp     eax, ebx
         je      .Return
 
-        stdcall Glext.LoadShader, frShaderFile, GL_FRAGMENT_SHADER
+        stdcall Glext.LoadShader, frShaderFilePath, GL_FRAGMENT_SHADER
         mov     [fragmentShader], eax
 
         cmp     eax,ebx

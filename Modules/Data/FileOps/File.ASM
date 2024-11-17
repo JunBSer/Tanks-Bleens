@@ -63,7 +63,7 @@ proc File.LoadContent uses edi,\
 endp
 
 proc File.ReadModel uses ebx esi edi,\
-        resultMesh, filePath
+        filePath
         locals
                 hFile           dd      ?
                 fileData        dd      ?
@@ -99,16 +99,18 @@ proc File.ReadModel uses ebx esi edi,\
         stdcall    FileMeshFree, [fileMesh]
 
         mov        esi, [tempFileMesh]
-        mov        eax, [esi + TempFileMesh.vertices]
-        mov        ecx, [esi + TempFileMesh.normals]
-        mov        edx, [esi + TempFileMesh.textures]
-        mov        edi, [esi + TempFileMesh.verticesCount]
+        ;mov        eax, [esi + TempFileMesh.vertices]
+        ;mov        ecx, [esi + TempFileMesh.normals]
+        ;mov        edx, [esi + TempFileMesh.textures]
+        ;mov        edi, [esi + TempFileMesh.verticesCount]
 
-        mov        esi, [resultMesh]
-        mov        [esi + Mesh.VBOvert], eax
-        mov        [esi + Mesh.VBOnorm], ecx
-        mov        [esi + Mesh.VBOtex], edx
-        mov        [esi + Mesh.vertexCnt], edi
-        invoke     HeapFree, [hHeap], ebx, [tempFileMesh]
+       ; mov        esi, [resultMesh]
+       ; mov        [esi + Mesh.VBOvert], eax
+       ; mov        [esi + Mesh.VBOnorm], ecx
+       ; mov        [esi + Mesh.VBOtex], edx
+       ; mov        [esi + Mesh.vertexCnt], edi
+       ; invoke     HeapFree, [hHeap], ebx, [tempFileMesh]
+
+       mov         eax, esi
         ret
 endp
