@@ -24,7 +24,7 @@ proc FileMeshAlloc uses esi,\
         mov        [esi + FileMesh.textures], eax
 
         xor        edx, edx
-        mov        eax, 3 * 3 * 4 ;GL_INT
+        mov        eax, 3 * 4 ;3 * 3 * 4 ;GL_INT
         mov        ecx, [esi + FileMesh.trianglesCount]
         mul        ecx
         push       eax eax eax
