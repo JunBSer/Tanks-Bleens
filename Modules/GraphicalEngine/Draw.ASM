@@ -1,20 +1,22 @@
-        include         "./TestData.asm"
         include         "./Textures.asm"
         include         "./UniformLocations.inc"
+        include         "./MapInit.asm"
 
-        program         GLint           0
-        fragmentShader  GLuint          0
-        vertexShader    GLuint          0
-        textureID       GLuint          0
-        frShaderFile    db              "Modules/GraphicalEngine/Resources/stdFragment.glsl", 0
-        vrtxShaderFile  db              "Modules/GraphicalEngine/Resources/stdVertex.glsl", 0
+        program             GLint           0
+        fragmentShader      GLuint          0
+        vertexShader        GLuint          0
+        textureID           GLuint          0
 
-        cameraPosition  Vector3         -4.0, -4.0, 4.0
+        frShaderFilePath    db              "Resources/stdFragment.glsl", 0
+        vrtxShaderFilePath  db              "Resources/stdVertex.glsl", 0
+
+
+        cameraPosition  Vector3         0.0, 0.0, 15.0
         targetPosition  Vector3         0.0, 0.0, 0.0
-        upVector        Vector3         0.0, 0.0, 1.0
+        upVector        Vector3         0.0, 1.0, 0.0
 
-        lightColor      Vector3         1.0, 1.0, 1.0
-        lightDir        Vector3         0.0, 0.0, -1.0
+        lightColor      Vector3         0.6, 0.6, 0.6
+        lightDir        Vector3         0.0, 0.0, 1.0
 
         radian          GLfloat         57.32
         fovY            dd              60.0
@@ -28,7 +30,11 @@
 
 
 proc InitDraw  uses edi
+     locals
+         tempFileMesh      dd              ?
+     endl
 
+     ;GetUniforms
      invoke     glGetUniformLocation, [program],modelname
      mov        [modelViewMatrixLocation],eax
 
@@ -48,7 +54,12 @@ proc InitDraw  uses edi
      mov        [lightColorLocation],eax
 
 
+     ;Init textures
+     stdcall    InitTexture, textureFileName
+     mov        [textureID], eax
 
+
+     ;Init objArr
      mov         eax, 4
      mov         [objCap],eax
      shl         eax,2
@@ -56,25 +67,10 @@ proc InitDraw  uses edi
      mov         [Objects],eax
      mov         [objCnt],0
 
-     stdcall    InitTexture, textureFileName
-     mov        [textureID], eax
+     stdcall     MapInit
 
 
 
-     stdcall    CreateMesh, vert, norm, txt, [textureID], [vertCnt]
-    ; mov        [objectTemp],eax
-     stdcall    AddToMeshes,eax
-
-     ;stdcall    CreateMesh, vert2,[vertCnt], clr2, [colorCnt]
-     ;stdcall    AddToMeshes,eax
-
-
-
-
-
-
-
-    ; stdcall Draw
         ret
 endp
 
@@ -83,15 +79,14 @@ endp
 proc DrawObject uses edi,\
      obj
      mov        edi, [obj]
-
+     mov        edi, [edi+Object.pMesh]
 
 
 
      invoke     glBindVertexArray, [edi+Mesh.VAO]
 
 
-
-     ;invoke     glActiveTexture, GL_TEXTURE0
+     invoke     glActiveTexture, GL_TEXTURE0
      invoke     glBindTexture, GL_TEXTURE_2D, [edi+Mesh.textureID]
      invoke     glUniform1i, [samplerLocation], 0
 
@@ -136,10 +131,10 @@ proc Draw uses esi ebx
         mov        eax, [Objects]
         push       ecx
         stdcall    DrawObject,  [eax+esi]
-        ;dop
 
 
-        invoke     glBindVertexArray, 0
+
+       ; invoke     glBindVertexArray, 0
 
 
         pop     ecx

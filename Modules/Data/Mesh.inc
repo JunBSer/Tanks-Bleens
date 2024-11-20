@@ -24,8 +24,5 @@ struct Mesh
         VBOtex          GLuint               ?
        
         vertexCnt       dd                   ? 
-        textureID       GLuint               ? 
-       
+        textureID       GLuint               ?        
 ends 
-        ; indexCnt        dd          ? 
-        ; indices         dd          ?

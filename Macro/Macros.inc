@@ -39,3 +39,13 @@ macro free address
 {
         invoke  HeapFree, [hHeap], ebx, address 
 }
+
+macro len strAddr 
+{
+        mov     ecx, 256
+        mov     edi,strAddr
+        mov     al,bl
+        repne   scasb
+        sub     ecx,255
+        neg     ecx
+}
