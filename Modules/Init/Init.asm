@@ -2,8 +2,10 @@
         include         "../Glext/GLext.asm"
         include         "../Data/Matrix.inc"
         include         "../Data/Mesh.inc"
+        include         "../LogicalEngine/BBoxes.asm"
         include         "../GraphicalEngine/Matrix.asm"
         include         "../GraphicalEngine/Mesh.asm"
+        include         "../Data/Object.inc"
 
 
 proc Init uses esi

@@ -83,7 +83,6 @@ proc TempFileMeshFree uses esi,\
      free       [esi + TempFileMesh.vertices]
      free       [esi + TempFileMesh.normals]
      free       [esi + TempFileMesh.textures]
-     free       [esi + TempFileMesh.verticesCount]
 
      free       esi
 

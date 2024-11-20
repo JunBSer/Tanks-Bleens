@@ -1,21 +1,21 @@
-        include         "./TestData.asm"
         include         "./Textures.asm"
         include         "./UniformLocations.inc"
+        include         "./MapInit.asm"
 
         program             GLint           0
         fragmentShader      GLuint          0
         vertexShader        GLuint          0
         textureID           GLuint          0
-        frShaderFilePath    db              "Modules/GraphicalEngine/Resources/stdFragment.glsl", 0
-        vrtxShaderFilePath  db              "Modules/GraphicalEngine/Resources/stdVertex.glsl", 0
-        modelPath           db              "Modules/GraphicalEngine/Resources/demon.obj",0
-        ;modelPath2           db              "Modules/GraphicalEngine/Resources/map1.obj",0
 
-        cameraPosition  Vector3         -5.0, -5.0, 5.0
-        targetPosition  Vector3         0.0, 0.0, 0.5
-        upVector        Vector3         0.0, 0.0, 1.0
+        frShaderFilePath    db              "Resources/stdFragment.glsl", 0
+        vrtxShaderFilePath  db              "Resources/stdVertex.glsl", 0
 
-        lightColor      Vector3         1.0, 1.0, 1.0
+
+        cameraPosition  Vector3         0.0, 0.0, 15.0
+        targetPosition  Vector3         0.0, 0.0, 0.0
+        upVector        Vector3         0.0, 1.0, 0.0
+
+        lightColor      Vector3         0.6, 0.6, 0.6
         lightDir        Vector3         0.0, 0.0, 1.0
 
         radian          GLfloat         57.32
@@ -67,33 +67,9 @@ proc InitDraw  uses edi
      mov         [Objects],eax
      mov         [objCnt],0
 
-
-     ;Read Obj
-     stdcall    File.ReadModel, modelPath
-     mov        [tempFileMesh], eax
-
-     mov        edi, eax
-
-     ;Create obj
-     stdcall    CreateMesh, [edi+TempFileMesh.vertices], [edi+TempFileMesh.normals], [edi+TempFileMesh.textures], [textureID], [edi+TempFileMesh.verticesCount]
-
-     ;stdcall    CreateMesh, vert, norm, txt, [textureID], [vertCnt]
-     stdcall    AddToMeshes,eax
-
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-     ; stdcall    File.ReadModel, modelPath2
-    ; mov        [tempFileMesh], eax
-
-    ; mov        edi, eax
-
-     ;Create obj
-    ; stdcall    CreateMesh, [edi+TempFileMesh.vertices], [edi+TempFileMesh.normals], [edi+TempFileMesh.textures], [textureID], [edi+TempFileMesh.verticesCount]
-
-     ;stdcall    CreateMesh, vert, norm, txt, [textureID], [vertCnt]
-    ; stdcall    AddToMeshes,eax
+     stdcall     MapInit
 
 
-    ; stdcall    TempFileMeshFree, [tempFileMesh]
 
         ret
 endp
@@ -103,15 +79,14 @@ endp
 proc DrawObject uses edi,\
      obj
      mov        edi, [obj]
-
+     mov        edi, [edi+Object.pMesh]
 
 
 
      invoke     glBindVertexArray, [edi+Mesh.VAO]
 
 
-
-     ;invoke     glActiveTexture, GL_TEXTURE0
+     invoke     glActiveTexture, GL_TEXTURE0
      invoke     glBindTexture, GL_TEXTURE_2D, [edi+Mesh.textureID]
      invoke     glUniform1i, [samplerLocation], 0
 

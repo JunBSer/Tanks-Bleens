@@ -64,16 +64,64 @@ proc CreateMesh uses esi edi ebx,\
 
      invoke     glBindVertexArray,0                ; [currVao]
 
+
      mov        eax, [pMesh]
      ret
 endp
 
 
+proc CreateObject uses esi edi,\
+     pMesh, pMinPoint, pMaxPoint
+
+     locals
+        pObject         dd      ?
+     endl
+
+     xor     ebx,ebx
+
+     malloc     sizeof.Object
+     mov        [pObject],eax
+
+     mov        esi, eax
+     mov        eax, [pMesh]
+     mov        [esi + Object.pMesh], eax
 
 
+     ;Fill minPoint data
+     mov        edi, [pMinPoint]
 
-proc AddToMeshes uses edi ebx,\
-           pMesh
+     mov        eax, [edi + Vector3.x]
+     mov        [esi + Object.MinPoint], eax
+
+     mov        eax, [edi + Vector3.y]
+     mov        [esi + Object.MinPoint + 4], eax
+
+     mov        eax, [edi + Vector3.z]
+     mov        [esi + Object.MinPoint + 8], eax
+
+     ;Fill maxPoint data
+     mov        edi, [pMaxPoint]
+
+     mov        eax, [edi + Vector3.x]
+     mov        [esi + Object.MaxPoint], eax
+
+     mov        eax, [edi + Vector3.y]
+     mov        [esi + Object.MaxPoint + 4], eax
+
+     mov        eax, [edi + Vector3.z]
+     mov        [esi + Object.MaxPoint + 8], eax
+
+
+     free       edi
+     free       [pMinPoint]
+
+     mov        eax, esi
+    ret
+endp
+
+
+proc AddToObjects uses esi edi ebx,\
+           pObject
 
      locals
           tempObjects   dd      ?
@@ -86,32 +134,31 @@ proc AddToMeshes uses edi ebx,\
 
      shl        [objCap],1
 
-     mov        eax,[objCnt]
      shl        eax,3
 
 
      malloc     eax
      mov        [tempObjects],eax
 
-     mov        eax,[objCap]
-     shl        eax,1
+     mov        eax,[objCnt]
+     shl        eax,2
 
      memcpy     [tempObjects], [Objects], eax
 
      mov        edx, [Objects] ;save old obj
 
-     mov        eax, [tempObjects]
-     mov        [Objects],eax
+     xchg       eax, [tempObjects]
+     mov        [Objects],eax                                            ; 0 1 2 3 4 5 6 7 8 9
 
-     xor        ebx, ebx
-     invoke     HeapFree, [hHeap], ebx, edx
+     ;xor        ebx, ebx
+     free       edx
 
 .Skip:
      mov        edi, [Objects]
      mov        ebx, [objCnt]
      shl        ebx,2
 
-     mov        eax, [pMesh]
+     mov        eax, [pObject]
 
      mov        [edi+ebx],eax
 

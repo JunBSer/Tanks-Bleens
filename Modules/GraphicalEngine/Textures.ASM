@@ -1,6 +1,6 @@
         include         "../Data/LoadTextures.asm"
 
-        textureFileName         db     "Modules/GraphicalEngine/Resources/texture.bmp",0
+        textureFileName         db     "Resources/mainText.bmp",0
 
 proc    LinkTexture uses edi,\
         pTextureData, imgSizes
