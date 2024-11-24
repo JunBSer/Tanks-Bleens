@@ -133,16 +133,16 @@ proc Vector3.Add uses esi edi,\
         mov     esi, [src]
         mov     edi, [dest]
 
-        ld      [edi + Vector3.x]
-        add     [esi + Vector3.x]
+        fld      [edi + Vector3.x]
+        fadd     [esi + Vector3.x]
         fstp    [edi + Vector3.x]
 
-        ld      [edi + Vector3.y]
-        add     [esi + Vector3.y]
+        fld      [edi + Vector3.y]
+        fadd     [esi + Vector3.y]
         fstp    [edi + Vector3.y]
 
-        ld      [edi + Vector3.z]
-        add     [esi + Vector3.z]
+        fld      [edi + Vector3.z]
+        fadd     [esi + Vector3.z]
         fstp    [edi + Vector3.z]
 
         ret
@@ -165,6 +165,50 @@ proc Vector3.Sub uses esi edi,\
         fld     [edi + Vector3.z]
         fsub    [esi + Vector3.z]
         fstp    [edi + Vector3.z]
+
+        ret
+endp
+
+proc Vector3.Mul uses edi,\
+     dest, value
+
+        mov     edi, [dest]
+        fld     [edi + Vector3.x]
+        fmul    [value]
+        fstp    [edi + Vector3.x]
+
+        fld     [edi + Vector3.y]
+        fmul    [value]
+        fstp    [edi + Vector3.y]
+
+        fld     [edi + Vector3.z]
+        fmul    [value]
+        fstp    [edi + Vector3.z]
+        ret
+endp
+
+proc Vector3.Dot uses edi esi,\
+     v1, v2
+
+        locals
+                result          GLfloat  ?
+        endl
+
+        mov     edi, [v1]
+        mov     esi, [v2]
+
+        fld     [edi + Vector3.x]
+        fmul    [esi + Vector3.x]
+
+        fld     [edi + Vector3.y]
+        fmul    [esi + Vector3.y]
+
+        fld     [edi + Vector3.z]
+        fmul    [esi + Vector3.z]
+        faddp
+        faddp
+        fstp    [result]
+        mov     eax, [result]
 
         ret
 endp

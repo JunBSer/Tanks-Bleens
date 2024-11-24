@@ -34,6 +34,7 @@ proc InitDraw  uses edi
          tempFileMesh      dd              ?
      endl
 
+
      ;GetUniforms
      invoke     glGetUniformLocation, [program],modelname
      mov        [modelViewMatrixLocation],eax
@@ -105,8 +106,6 @@ proc Draw uses esi ebx
         invoke  glClearColor, 0.3, 0.3, 0.3, 1.0
         invoke  glClear, GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT
 
-
-
         cmp     [program], ebx
         je      @F
 
@@ -114,10 +113,10 @@ proc Draw uses esi ebx
 
         invoke     glUniform3fv, [lightDirLocation], 1, lightDir
         invoke     glUniform3fv, [lightColorLocation], 1, lightColor
-        invoke     glUniform3fv, [viewPosLocation], 1, cameraPosition
+        invoke     glUniform3fv, [viewPosLocation], 1, position
+        stdcall    Camera.Move
         invoke     glUniformMatrix4fv,[modelViewMatrixLocation],1,GL_FALSE, matrixX
         invoke     glUniformMatrix4fv,[projMatrixLocation],1,GL_FALSE, matrixPr
-
 
         mov     ecx,[objCnt]
 

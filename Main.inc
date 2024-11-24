@@ -16,7 +16,10 @@
         
         include         "Modules/Init/Init.asm"
         
-        include         "Modules/GraphicalEngine/Draw.asm"      
+        include         "Modules/GraphicalEngine/Draw.asm"
+
+        include         "Modules/Camera/Camera.asm"
+        include         "Modules/Camera/Camera.inc"
 data import
 
         library kernel32,       "KERNEL32.DLL",\

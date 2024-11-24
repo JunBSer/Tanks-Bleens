@@ -57,7 +57,7 @@ proc Init uses esi
         stdcall Glext.LoadFunctions
         stdcall Glext.InitShaders
         stdcall InitDraw
-
+        stdcall Camera.Init
 
         ret
 endp
