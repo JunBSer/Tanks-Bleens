@@ -50,9 +50,9 @@ proc Init uses esi
         invoke  glShadeModel, GL_SMOOTH
         invoke  glHint, GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST
 
-        invoke  glMatrixMode, GL_MODELVIEW
-        invoke  glLoadIdentity
-        stdcall Matrix.LookAt, cameraPosition, targetPosition, upVector
+       ; invoke  glMatrixMode, GL_MODELVIEW
+       ; invoke  glLoadIdentity
+        ;stdcall Matrix.LookAt, cameraPosition, targetPosition, upVector
 
         stdcall Glext.LoadFunctions
         stdcall Glext.InitShaders

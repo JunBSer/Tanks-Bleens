@@ -34,11 +34,11 @@ proc Camera.Move uses ebx edi esi
         ;stdcall Matrix.Copy, matrixX, matrixV
 
         stdcall Matrix.Rotate, [mapAngleX], 1.0, 0.0, 0.0
-        stdcall Matrix.Copy, matrixX, matrixR
+        stdcall Matrix.Copy, matrixM, matrixR
         ;stdcall Matrix.Rotate, [mapAngleZ], 0.0, 0.0, 1.0
         ;stdcall Matrix.Multiply, matrixX, matrixR
         stdcall Matrix.LookAtV, position, edi, esi
-        stdcall Matrix.Multiply, matrixX, matrixV
+        ;stdcall Matrix.Multiply, matrixX, matrixV
 
         ret
 endp

@@ -46,6 +46,7 @@ proc WindowProc,\
         jmp     .ReturnZero
 
 .Destroy:
+       stdcall  ReleaseGraphicsResources
        invoke  ExitProcess, ebx
 .ReturnZero:
 

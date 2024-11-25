@@ -1,7 +1,7 @@
 include         "../Data/Vector.inc"
 include         "./Vector3.asm"
 
-matrixX          Matrix4x4
+matrixM          Matrix4x4
 matrixPr         Matrix4x4
 matrixR          Matrix4x4
 matrixT          Matrix4x4

@@ -36,13 +36,16 @@ proc InitDraw  uses edi
 
 
      ;GetUniforms
-     invoke     glGetUniformLocation, [program],modelname
-     mov        [modelViewMatrixLocation],eax
+     invoke     glGetUniformLocation, [program],modelMtrxName
+     mov        [modelMatrixLocation],eax
 
-     invoke     glGetUniformLocation, [program],projname
+     invoke     glGetUniformLocation, [program],viewMtrxName
+     mov        [viewMatrixLocation],eax
+
+     invoke     glGetUniformLocation, [program],projMtrxName
      mov        [projMatrixLocation],eax
 
-     invoke     glGetUniformLocation, [program],texname
+     invoke     glGetUniformLocation, [program],textName
      mov        [samplerLocation],eax
 
      invoke     glGetUniformLocation, [program],LDName
@@ -115,7 +118,8 @@ proc Draw uses esi ebx
         invoke     glUniform3fv, [lightColorLocation], 1, lightColor
         invoke     glUniform3fv, [viewPosLocation], 1, position
         stdcall    Camera.Move
-        invoke     glUniformMatrix4fv,[modelViewMatrixLocation],1,GL_FALSE, matrixX
+        invoke     glUniformMatrix4fv,[modelMatrixLocation],1,GL_FALSE, matrixM
+        invoke     glUniformMatrix4fv,[viewMatrixLocation],1,GL_FALSE, matrixV
         invoke     glUniformMatrix4fv,[projMatrixLocation],1,GL_FALSE, matrixPr
 
         mov     ecx,[objCnt]
@@ -142,4 +146,55 @@ proc Draw uses esi ebx
         invoke     glUseProgram, ebx
         invoke     SwapBuffers, [hdc]
         ret
+endp
+
+
+
+proc    ReleaseGraphicsResources uses esi edi
+
+
+        invoke     glBindVertexArray, 0
+        invoke     glBindBuffer, GL_ARRAY_BUFFER,0
+        invoke     glUseProgram, ebx
+
+
+        mov     ecx, [objCnt]
+        mov     esi, [Objects]
+
+.LoopFree:
+        push    ecx
+        mov     edx, [objCnt]
+        sub     edx, ecx
+
+        push    edx
+
+        mov     edi, [esi+edx*4]
+
+        mov     edi, [edi+Object.pMesh]
+
+        lea     eax, [edi+Mesh.VAO]
+        invoke  glDeleteVertexArrays, 1, eax
+
+        lea     eax, [edi+Mesh.VBOvert]
+        invoke  glDeleteBuffers, 1, eax
+
+        lea     eax, [edi+Mesh.VBOnorm]
+        invoke  glDeleteBuffers, 1, eax
+
+        lea     eax, [edi+Mesh.VBOtex]
+        invoke  glDeleteBuffers, 1, eax
+
+        free    edi
+
+        pop     edx
+
+        mov     ecx, [esi+edx*4]
+        free    ecx
+
+        pop     ecx
+        loop    .LoopFree
+
+        invoke  glDeleteTextures, 1, textureID
+
+    ret
 endp
