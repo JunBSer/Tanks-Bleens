@@ -17,7 +17,7 @@
         targetPosition  Vector3         0.0, 0.0, 0.0
         upVector        Vector3         0.0, 1.0, 0.0
 
-        lightColor      Vector3         0.4, 0.4, 0.4
+        lightColor      Vector3         0.6, 0.6, 0.6
         lightDir        Vector3         0.0, 1.0, 0.5
 
         radian          GLfloat         57.32
