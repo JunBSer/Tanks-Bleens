@@ -133,16 +133,16 @@ proc Vector3.Add uses esi edi,\
         mov     esi, [src]
         mov     edi, [dest]
 
-        ld      [edi + Vector3.x]
-        add     [esi + Vector3.x]
+        fld      [edi + Vector3.x]
+        fadd     [esi + Vector3.x]
         fstp    [edi + Vector3.x]
 
-        ld      [edi + Vector3.y]
-        add     [esi + Vector3.y]
+        fld      [edi + Vector3.y]
+        fadd     [esi + Vector3.y]
         fstp    [edi + Vector3.y]
 
-        ld      [edi + Vector3.z]
-        add     [esi + Vector3.z]
+        fld      [edi + Vector3.z]
+        fadd     [esi + Vector3.z]
         fstp    [edi + Vector3.z]
 
         ret
@@ -167,4 +167,106 @@ proc Vector3.Sub uses esi edi,\
         fstp    [edi + Vector3.z]
 
         ret
+endp
+
+proc Vector3.Mul uses edi,\
+     dest, value
+
+        mov     edi, [dest]
+        fld     [edi + Vector3.x]
+        fmul    [value]
+        fstp    [edi + Vector3.x]
+
+        fld     [edi + Vector3.y]
+        fmul    [value]
+        fstp    [edi + Vector3.y]
+
+        fld     [edi + Vector3.z]
+        fmul    [value]
+        fstp    [edi + Vector3.z]
+        ret
+endp
+
+proc Vector3.Div uses edi,\
+     dest, value
+
+        mov     edi, [dest]
+        fld     [edi + Vector3.x]
+        fdiv    [value]
+        fstp    [edi + Vector3.x]
+
+        fld     [edi + Vector3.y]
+        fdiv    [value]
+        fstp    [edi + Vector3.y]
+
+        fld     [edi + Vector3.z]
+        fdiv    [value]
+        fstp    [edi + Vector3.z]
+        ret
+endp
+
+proc Vector3.Dot uses edi esi,\
+     v1, v2
+
+        locals
+                result          GLfloat  ?
+        endl
+
+        mov     edi, [v1]
+        mov     esi, [v2]
+
+        fld     [edi + Vector3.x]
+        fmul    [esi + Vector3.x]
+
+        fld     [edi + Vector3.y]
+        fmul    [esi + Vector3.y]
+
+        fld     [edi + Vector3.z]
+        fmul    [esi + Vector3.z]
+        faddp
+        faddp
+        fstp    [result]
+        mov     eax, [result]
+
+        ret
+endp
+
+proc Vector3.MulMat4 uses esi edi ebx,\
+     vector, matrix, resVector
+
+        locals
+                Temp dd ?
+                source          Vector4
+                result          Vector4         0.0, 0.0, 0.0, 0.0
+        endl
+
+        lea     eax, [source]
+        stdcall Vector3.Copy, eax, [vector]
+        mov     [source.w], 1.0
+
+        lea     esi, [source]
+        lea     edi, [result]
+        mov     ebx, [matrix]
+
+        xor     ecx, ecx          ; i
+.Loop1:
+                xor     edx, edx  ; j
+        .Loop2:
+                        fld     dword [esi + edx]
+                        mov     eax, edx
+                        shl     eax, 2
+                        add     eax, ecx
+                        fmul    dword [ebx + eax]
+                        fadd    dword [edi + ecx]
+                        fstp    dword [edi + ecx]
+                add     edx, 4
+                cmp     edx, 16
+                jb      .Loop2
+        add     ecx, 4
+        cmp     ecx, 16
+        jb      .Loop1
+
+        lea     eax, [result]
+        stdcall Vector3.Copy, [resVector], eax
+  ret
 endp

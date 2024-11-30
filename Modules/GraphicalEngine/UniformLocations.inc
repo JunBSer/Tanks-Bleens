@@ -1,11 +1,14 @@
-        modelViewMatrixLocation         GLint   ?
-        modelname                       db      "u_ModelViewMatrix",0
+        modelMatrixLocation             GLint   ?
+        modelMtrxName                   db      "u_ModelMatrix",0
+
+        viewMatrixLocation              GLint   ?
+        viewMtrxName                    db      "u_ViewMatrix",0
 
         projMatrixLocation              GLint   ?
-        projname                         db      "u_ProjectionMatrix",0
+        projMtrxName                    db      "u_ProjectionMatrix",0
 
         samplerLocation                 GLint   ?
-        texname                         db      "texture1",0
+        textName                        db      "texture1",0
 
         lightDirLocation                GLint   ?
         LDName                          db      "lightDir",0

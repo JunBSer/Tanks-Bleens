@@ -71,7 +71,7 @@ endp
 
 
 proc CreateObject uses esi edi,\
-     pMesh, pMinPoint, pMaxPoint
+     pMesh, pAABB, pOBB
 
      locals
         pObject         dd      ?
@@ -87,33 +87,13 @@ proc CreateObject uses esi edi,\
      mov        [esi + Object.pMesh], eax
 
 
-     ;Fill minPoint data
-     mov        edi, [pMinPoint]
+     ;Fill pAABB
+     mov        eax, [pAABB]
+     mov        [esi + Object.pAABB], eax
 
-     mov        eax, [edi + Vector3.x]
-     mov        [esi + Object.MinPoint], eax
-
-     mov        eax, [edi + Vector3.y]
-     mov        [esi + Object.MinPoint + 4], eax
-
-     mov        eax, [edi + Vector3.z]
-     mov        [esi + Object.MinPoint + 8], eax
-
-     ;Fill maxPoint data
-     mov        edi, [pMaxPoint]
-
-     mov        eax, [edi + Vector3.x]
-     mov        [esi + Object.MaxPoint], eax
-
-     mov        eax, [edi + Vector3.y]
-     mov        [esi + Object.MaxPoint + 4], eax
-
-     mov        eax, [edi + Vector3.z]
-     mov        [esi + Object.MaxPoint + 8], eax
-
-
-     free       edi
-     free       [pMinPoint]
+     ;Fill pOBB
+     mov        eax, [pOBB]
+     mov        [esi + Object.pOBB], eax
 
      mov        eax, esi
     ret
@@ -164,4 +144,37 @@ proc AddToObjects uses esi edi ebx,\
 
      add        [objCnt],1
      ret
+endp
+
+
+
+proc    ReadObject uses edi ,\
+        objFPath, textId
+
+        locals
+            tempFileMesh        dd      ?
+            pAABB               dd      ?
+            pOBB                dd      ?
+        endl
+
+        stdcall    File.ReadModel, [objFPath]
+
+        mov        [tempFileMesh], eax
+
+        mov        edi, [tempFileMesh]
+
+        stdcall    FindAABBStatic, [edi+TempFileMesh.vertices], [edi+TempFileMesh.verticesCount]
+        mov        [pAABB], eax
+
+        stdcall    Collision.ConvertAABBtoOBB, [pAABB]
+        mov        [pOBB], eax
+
+        stdcall    CreateMesh, [edi+TempFileMesh.vertices], [edi+TempFileMesh.normals], [edi+TempFileMesh.textures], [textId], [edi+TempFileMesh.verticesCount]
+
+        stdcall    CreateObject, eax, [pAABB], [pOBB]
+
+        push       eax
+        stdcall    TempFileMeshFree, [tempFileMesh]
+        pop        eax
+    ret
 endp
