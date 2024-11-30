@@ -22,7 +22,8 @@ void main() {
     FragPos = vec3(u_ModelViewMatrix * vec4(aPos, 1.0));
 
     
-    Normal = transpose(inverse(mat3(u_ModelMatrix))) * aNormal;
+    Normal = normalize(transpose(inverse(mat3(u_ModelMatrix))) * aNormal);
+
 
     
     TexCoords = aTexCoord;

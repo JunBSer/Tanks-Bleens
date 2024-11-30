@@ -1,6 +1,7 @@
         include         "../Data/LoadTextures.asm"
 
-        textureFileName         db     "Resources/mainText.bmp",0
+        mainTxtFilePath             db     "Resources/mainText.bmp",0
+        tankTxtFilePath             db     "Resources/texture.bmp", 0
 
 proc    LinkTexture uses edi,\
         pTextureData, imgSizes
@@ -48,10 +49,10 @@ proc    InitTexture uses edi,\
         stdcall LoadTexture, [textureFileName], [imgSizes]
 
         stdcall LinkTexture, eax, [imgSizes]
-        mov     [textureID], eax
+        mov     [textureId], eax
 
         free    [imgSizes]
 
-        mov     eax, [textureID]
+        mov     eax, [textureId]
         ret
 endp

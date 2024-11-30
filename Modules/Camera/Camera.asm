@@ -1,51 +1,121 @@
-proc Camera.Move uses ebx edi esi
+proc Player.Move uses ebx edi esi
 
-        locals
-                direction               Vector3         0.0, 0.0, 0.0
-                up                      Vector3         0.0, 0.0, 0.0
-                right                   Vector3         0.0, 0.0, 0.0
-                tempTarget              Vector3         0.0, 0.0, 0.0
-                worldUp                 Vector3         0.0, 1.0, 0.0
-        endl
-
-        stdcall Camera.ChangeAngles, turn
-
-        lea     esi, [direction]
-        stdcall Camera.CalcDirection, esi, turn
-        lea     edi, [up]
-        stdcall Camera.CalcUp, edi, esi
-
-        lea     eax, [right]
-        stdcall Camera.CalcRight, eax, esi, edi
-
-        lea     edi, [direction]
-        lea     esi, [right]
-        stdcall Camera.CalcPosition, edi, esi
-
-        lea     edi, [tempTarget]
-        stdcall Vector3.Copy, edi, position
-        lea     esi, [direction]
-        stdcall Vector3.Add, edi, esi
-
-        lea     esi, [up]
-
-
-        ;stdcall Matrix.LookAtV, position, edi, esi
-        ;stdcall Matrix.Copy, matrixX, matrixV
-
-        stdcall Matrix.Rotate, [mapAngleX], 1.0, 0.0, 0.0
-        stdcall Matrix.Copy, matrixM, matrixR
-        ;stdcall Matrix.Rotate, [mapAngleZ], 0.0, 0.0, 1.0
-        ;stdcall Matrix.Multiply, matrixX, matrixR
-        stdcall Matrix.LookAtV, position, edi, esi
-        ;stdcall Matrix.Multiply, matrixX, matrixV
-
+        stdcall MoveCamera, [mainCamera]
+        stdcall MoveTank,   [tank], [mainCamera]
+.Return:
         ret
 endp
 
 
 
-proc Camera.CalcPosition uses esi edi,\
+proc Camera.InitLookAt uses esi edi,\
+        rotations, position
+
+        locals
+                direction               Vector3         0.0, 0.0, 0.0
+                up                      Vector3         0.0, 0.0, 0.0
+                tempTarget              Vector3         0.0, 0.0, 0.0
+        endl
+
+        lea     esi, [direction]
+        stdcall Camera.CalcDirection, esi, [rotations]
+        lea     edi, [up]
+        stdcall Camera.CalcUp, edi, esi
+
+
+        lea     edi, [tempTarget]
+        stdcall Vector3.Copy, edi, [position]
+        lea     esi, [direction]
+        stdcall Vector3.Add, edi, esi
+        lea     esi, [up]
+
+        stdcall Matrix.LookAtV, [position], edi, esi
+        ret
+endp
+
+proc Model.KeyState.Update uses esi,\         ;+
+        KeyState
+
+        mov     esi, [KeyState]
+
+        mov     dword [esi], VK_W
+        invoke  GetAsyncKeyState, VK_S
+        test    eax, 0x8000
+        jz      .Skip
+        mov     dword [esi], VK_S
+.Skip:
+        ret
+endp
+
+proc Model.CalcTurn uses edi,\
+     turn, rotateSpeed
+
+        mov     edi, [turn]
+.PressA:
+        invoke  GetAsyncKeyState, VK_A
+        test    eax, 0x8000
+        jz      .PressD
+        fldz     ;[edi + Vector3.y]
+        cmp     dword [KeyState], VK_W
+        jne     .BackwardA
+.ForwardA:
+        fsub    [rotateSpeed]
+        jmp     .SkipA
+.BackwardA:
+        fadd    [rotateSpeed]
+.SkipA:
+        fstp    [edi + Vector3.y]
+.PressD:
+        invoke  GetAsyncKeyState, VK_D
+        test    eax, 0x8000
+        jz      .Skip
+        fldz     ;[edi + Vector3.y]
+        cmp     dword [KeyState], VK_W
+        jne     .BackwardD
+.ForwardD:
+        fadd    [rotateSpeed]
+        jmp     .SkipD
+.BackwardD:
+        fsub    [rotateSpeed]
+.SkipD:
+        fstp    [edi + Vector3.y]
+.Skip:
+        ret
+endp
+
+proc Model.CalcPosition uses esi edi,\             ;+
+        position, direction, speed
+
+        locals
+                tempDirection   Vector3
+        endl
+
+        mov     edi, [position]
+       ; mov     [edi + Vector3.x], 0.0
+       ; mov     [edi + Vector3.y], 0.0
+       ; mov     [edi + Vector3.z], 0.0
+
+        mov     esi, [direction]
+        lea     eax, [tempDirection]
+        stdcall Vector3.Copy, eax, esi
+        lea     esi, [tempDirection]
+        stdcall Vector3.Mul, esi, [speed]
+
+.PressW:
+        invoke  GetAsyncKeyState, VK_W
+        test    eax, 0x8000
+        jz      .PressS
+        stdcall Vector3.Sub, edi, esi
+.PressS:
+        invoke  GetAsyncKeyState, VK_S
+        test    eax, 0x8000
+        jz      .Skip
+        stdcall Vector3.Add, edi, esi
+.Skip:
+        ret
+endp
+
+proc Camera.CalcPosition uses esi edi,\          ; not useble
         direction, right
 
         locals
@@ -88,7 +158,7 @@ proc Camera.CalcPosition uses esi edi,\
         ret
 endp
 
-proc Camera.CalcUp uses esi,\
+proc Camera.CalcUp uses esi,\                       ;+
         up, direction
 
         locals
@@ -105,7 +175,7 @@ proc Camera.CalcUp uses esi,\
         ret
 endp
 
-proc Camera.CalcRight uses esi,\
+proc Camera.CalcRight uses esi,\                  ;+
         right, direction, up
 
         stdcall Vector3.Cross, [direction], [up], [right]
@@ -114,7 +184,7 @@ proc Camera.CalcRight uses esi,\
         ret
 endp
 
-proc Camera.CalcDirection uses esi,\
+proc Camera.CalcDirection uses esi,\       ;+
         direction, turn
 
         locals
@@ -156,7 +226,7 @@ proc Camera.CalcDirection uses esi,\
 endp
 
 
-proc Camera.ChangeAngles uses edi,\
+proc Camera.ChangeAngles uses edi,\                     ;+?
         turn
 
         locals
@@ -201,17 +271,19 @@ proc Camera.ChangeAngles uses edi,\
         ret
 endp
 
-proc Camera.Init uses ebx
+proc Camera.Init uses ebx esi edi, \                            ;+
+        rotations, tankPos, camOffset, camera
 
-        xor     ebx, ebx
-        invoke  ShowCursor, ebx
-        mov     eax, [clientRect.right]
-        sar     eax, 1
-        mov     [windowWidthH], eax
-        mov     eax, [clientRect.bottom]
-        sar     eax, 1
-        mov     [windowHeightH], eax
-        xor     eax, eax
-        invoke  SetCursorPos, [windowWidthH], [windowHeightH]
+        mov     esi, [camera]
+        lea     edi, [esi + Camera.position]
+        stdcall Vector3.Copy, edi, [tankPos]
+        stdcall Vector3.Add, edi, [camOffset]
+
+        stdcall Camera.InitLookAt, [rotations], edi
+
+        lea     edi, [esi + Camera.rotations]
+        stdcall Vector3.Copy, edi, [rotations]
+
+        ;stdcall Matrix.LoadIdentity, matrixM
         ret
 endp
