@@ -17,7 +17,7 @@
         targetPosition  Vector3         0.0, 0.0, 0.0
         upVector        Vector3         0.0, 1.0, 0.0
 
-        lightColor      Vector3         0.5, 0.5, 0.5
+        lightColor      Vector3         0.4, 0.4, 0.4
         lightDir        Vector3         0.0, 1.0, 0.5
 
         radian          GLfloat         57.32
@@ -148,9 +148,10 @@ proc Draw uses esi ebx
         invoke     glUseProgram, [program]
         invoke     glUniform3fv, [lightDirLocation], 1, lightDir
         invoke     glUniform3fv, [lightColorLocation], 1, lightColor
-        invoke     glUniform3fv, [viewPosLocation], 1, position
+        lea        eax,[mainCamera + Camera.position]
+        invoke     glUniform3fv, [viewPosLocation], 1,eax
 
-        stdcall     Matrix.LoadIdentity, matrixM
+        stdcall    Matrix.LoadIdentity, matrixM
         invoke     glUniformMatrix4fv,[modelMatrixLocation],1,GL_FALSE, matrixM
         invoke     glUniformMatrix4fv,[viewMatrixLocation],1,GL_FALSE, matrixV
         invoke     glUniformMatrix4fv,[projMatrixLocation],1,GL_FALSE, matrixPr
