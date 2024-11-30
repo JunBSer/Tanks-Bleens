@@ -59,24 +59,24 @@ proc Model.CalcTurn uses edi,\
         cmp     dword [KeyState], VK_W
         jne     .BackwardA
 .ForwardA:
-        fsub    [rotateSpeed]
+        fadd    [rotateSpeed]
         jmp     .SkipA
 .BackwardA:
-        fadd    [rotateSpeed]
+        fsub    [rotateSpeed]
 .SkipA:
         fstp    [edi + Vector3.y]
 .PressD:
         invoke  GetAsyncKeyState, VK_D
         test    eax, 0x8000
         jz      .Skip
-        fldz     ;[edi + Vector3.y]
+        fld     [edi + Vector3.y]
         cmp     dword [KeyState], VK_W
         jne     .BackwardD
 .ForwardD:
-        fadd    [rotateSpeed]
+        fsub    [rotateSpeed]
         jmp     .SkipD
 .BackwardD:
-        fsub    [rotateSpeed]
+        fadd    [rotateSpeed]
 .SkipD:
         fstp    [edi + Vector3.y]
 .Skip:

@@ -399,7 +399,7 @@ proc Matrix.Rotate uses esi edi ebx,\
         fld     [z]
         fmul    [s]
         fsubp
-        fstp    [esi + Matrix4x4.m12]
+        fstp    [esi + Matrix4x4.m21]
 
         fld     [x]
         fmul    [z]
@@ -407,9 +407,9 @@ proc Matrix.Rotate uses esi edi ebx,\
         fld     [y]
         fmul    [s]
         faddp
-        fstp    [esi + Matrix4x4.m13]
+        fstp    [esi + Matrix4x4.m31]
 
-        mov     dword [esi + Matrix4x4.m14], 0.0
+        mov     dword [esi + Matrix4x4.m41], 0.0
 
         ; 2nd
         fld     [x]
@@ -418,7 +418,7 @@ proc Matrix.Rotate uses esi edi ebx,\
         fld     [z]
         fmul    [s]
         faddp
-        fstp    [esi + Matrix4x4.m21]
+        fstp    [esi + Matrix4x4.m12]
 
         fld     [c]
         fld     [y]
@@ -433,9 +433,9 @@ proc Matrix.Rotate uses esi edi ebx,\
         fld     [x]
         fmul    [s]
         fsubp
-        fstp    [esi + Matrix4x4.m23]
+        fstp    [esi + Matrix4x4.m32]
 
-        mov     dword [esi + Matrix4x4.m24], 0.0
+        mov     dword [esi + Matrix4x4.m42], 0.0
 
         ; 3rd
         fld     [x]
@@ -444,7 +444,7 @@ proc Matrix.Rotate uses esi edi ebx,\
         fld     [y]
         fmul    [s]
         fsubp
-        fstp    [esi + Matrix4x4.m31]
+        fstp    [esi + Matrix4x4.m13]
 
         fld     [z]
         fmul    [y]
@@ -452,7 +452,7 @@ proc Matrix.Rotate uses esi edi ebx,\
         fld     [x]
         fmul    [s]
         faddp
-        fstp    [esi + Matrix4x4.m32]
+        fstp    [esi + Matrix4x4.m23]
 
         fld     [c]
         fld     [z]
@@ -461,12 +461,12 @@ proc Matrix.Rotate uses esi edi ebx,\
         faddp
         fstp    [esi + Matrix4x4.m33]
 
-        mov     dword [esi + Matrix4x4.m34], 0.0
+        mov     dword [esi + Matrix4x4.m43], 0.0
 
         ; 4th
-        mov     dword [esi + Matrix4x4.m41], 0.0
-        mov     dword [esi + Matrix4x4.m42], 0.0
-        mov     dword [esi + Matrix4x4.m43], 0.0
+        mov     dword [esi + Matrix4x4.m14], 0.0
+        mov     dword [esi + Matrix4x4.m24], 0.0
+        mov     dword [esi + Matrix4x4.m34], 0.0
         mov     dword [esi + Matrix4x4.m44], 1.0
 
         ret

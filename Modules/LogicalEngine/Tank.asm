@@ -1,3 +1,4 @@
+
         tankBModelPath   db      "Resources/Tank/tankBody.obj", 0
         tankTModelPath   db      "Resources/Tank/tankTurret.obj", 0
 
@@ -88,7 +89,7 @@ proc   MoveTank uses esi edi ebx,\
        stdcall Model.CalcTurn, esi, [rotationSpeedModel]
        mov      edi, [pTank]
        lea      eax, [edi + Tank.rotations]
-       stdcall Vector3.Add, eax, esi
+       stdcall Vector3.Sub, eax, esi
 
        lea     ebx, [modelDirection]
        stdcall Camera.CalcDirection, ebx, esi
@@ -135,7 +136,7 @@ proc   MoveTank uses esi edi ebx,\
        lea     ebx, [modelDirection]
        stdcall Camera.CalcDirection, ebx, esi
 
-       mov      eax, 2.0
+       mov      eax, -2.0
        stdcall  Vector3.Mul, ebx, eax
        stdcall  Vector3.Add, edi, ebx
 
@@ -143,7 +144,7 @@ proc   MoveTank uses esi edi ebx,\
        lea      esi, [turnModel]
        lea      edi, [edi + Camera.rotations]
 
-       stdcall  Vector3.Add, edi,esi
+       stdcall  Vector3.Sub, edi,esi
 
 
     ret
