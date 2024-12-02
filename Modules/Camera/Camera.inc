@@ -12,7 +12,7 @@ speed                   GLfloat                 0.8
 rotationSpeedModel      GLfloat                 2.0
 
 scaleModel              Vector3                 0.09, 0.09, 0.09
-positionModel           Vector3                 7.0, -0.1, -2.0
+positionModel           Vector3                 7.0, 0.0, -2.3
 turnModel               Vector3                 0.0, -90.0, 0.0
 
 LastTime                dd                      0

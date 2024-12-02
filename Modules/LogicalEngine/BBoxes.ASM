@@ -43,31 +43,31 @@ proc    FindAABBStatic uses esi edi,\
 .CmpWithMinX:
         fld     [minX] ; minX  currX
         fcomip  st, st1 ;currX
-        jb      .ChangeMinX
+        ja      .ChangeMinX
 .CmpWithMaxX:
         fld     [maxX] ; maxX currX
         fcomip  st, st1; currX
-        ja      .ChangeMaxX
+        jb      .ChangeMaxX
         fstp    st  ; -
 .CmpWithMinY:
         fld     [esi + Vector3.y]; currY
         fld     [minY]  ; minY currY
         fcomip  st, st1 ; currY
-        jb      .ChangeMinY
+        ja      .ChangeMinY
 .CmpWithMaxY:
         fld     [maxY] ; maxY currY
         fcomip  st, st1; currY
-        ja      .ChangeMaxY
+        jb      .ChangeMaxY
         fstp    st
 .CmpWithMinZ:
         fld     [esi + Vector3.z]; currZ
         fld     [minZ]  ; minZ currZ
         fcomip  st, st1 ; currZ
-        jb      .ChangeMinZ
+        ja      .ChangeMinZ
 .CmpWithMaxZ:
         fld     [maxZ] ; maxZ currZ
         fcomip  st, st1; currZ
-        ja      .ChangeMaxZ
+        jb      .ChangeMaxZ
         fstp    st
         jmp     .Skip
 

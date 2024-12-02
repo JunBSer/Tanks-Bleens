@@ -67,6 +67,10 @@ proc    SpawnTank uses esi edi,\
 
         stdcall Matrix.Multiply, matrixS, matrixM, [esi + Tank.pModelMatrix]
 
+        push    [esi + Tank.pModelMatrix]
+        mov     eax, [esi + Tank.pBodyObj]
+        stdcall Collision.OBB.Setup, [eax + Object.pOBB] ; [esi + Tank.pModelMatrix]
+
        ; stdcall Camera.Init, [rotations], [position], stdOffset, [mainCamera]
 
     ret
@@ -88,8 +92,8 @@ proc   MoveTank uses esi edi ebx,\
        lea     esi, [turnModel]
        stdcall Model.CalcTurn, esi, [rotationSpeedModel]
        mov      edi, [pTank]
-       lea      eax, [edi + Tank.rotations]
-       stdcall Vector3.Sub, eax, esi
+       ;lea      eax, [edi + Tank.rotations]
+       ;stdcall Vector3.Sub, eax, esi
 
        lea     ebx, [modelDirection]
        stdcall Camera.CalcDirection, ebx, esi
@@ -107,8 +111,14 @@ proc   MoveTank uses esi edi ebx,\
        stdcall  Matrix.Translate, matrixT, esi
 
        stdcall Matrix.Multiply, matrixT, matrixR, matrixM
-       stdcall Matrix.Multiply, matrixM, [edi + Tank.pModelMatrix], matrixS
-       stdcall Matrix.Copy, [edi + Tank.pModelMatrix], matrixS
+       ;
+       stdcall Collision.SetupModelMatrix, edi, matrixM
+       cmp     eax, 1
+       je      .Return
+       ;
+       ;stdcall Matrix.Multiply, matrixM, [edi + Tank.pModelMatrix], matrixS
+
+       stdcall Matrix.Copy, matrixS, [edi + Tank.pModelMatrix]
 
 
        lea     esi, [matrixS + Matrix4x4.m41]
@@ -125,7 +135,12 @@ proc   MoveTank uses esi edi ebx,\
 
        stdcall  Vector3.Add, edi, eax
 
-
+       push    edi
+       mov      edi, [pTank]
+       lea     eax, [edi + Tank.rotations]
+       lea     esi, [turnModel]
+       stdcall Vector3.Sub, eax, esi
+       pop     edi
 
        ;lea      edx, [modelDirection]
        mov      esi, [pTank]
@@ -146,7 +161,7 @@ proc   MoveTank uses esi edi ebx,\
 
        stdcall  Vector3.Sub, edi,esi
 
-
+.Return:
     ret
 endp
 

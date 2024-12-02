@@ -1,5 +1,6 @@
 proc Player.Move uses ebx edi esi
 
+        ;stdcall MoveTank,   [tank], [mainCamera]
         stdcall MoveCamera, [mainCamera]
         stdcall MoveTank,   [tank], [mainCamera]
 .Return:

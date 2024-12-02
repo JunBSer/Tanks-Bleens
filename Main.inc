@@ -30,7 +30,8 @@
         
         include         "Modules/Init/Init.asm"
 
-        include         "Modules/PhisicalEngine/Collision.asm"
+        include         "Modules/PhysicalEngine/Collision.asm"
+        include         "../PhysicalEngine/Collision.inc"
         
         include         "Modules/GraphicalEngine/Draw.asm"
         
