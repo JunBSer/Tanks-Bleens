@@ -17,3 +17,5 @@ struct Axes
 ends
 
 axes    Axes
+
+DISTANCE_FOR_CHECK_COLLISION            GLfloat         15.0

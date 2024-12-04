@@ -509,3 +509,64 @@ proc Matrix.Scale uses esi edi,\
         mov     [edi + Matrix4x4.m33], eax
         ret
 endp
+
+proc Matrix.Ortho uses edi,\
+     matrix, left, right, bottom, top, near, far
+
+        mov     edi, [matrix]
+        mov     ecx, 4 * 4
+        xor     eax, eax
+        rep     stosd
+
+        mov     edi, [matrix]
+
+        fld1
+        fld1
+        faddp
+        ; matrix[0][0]
+        fld     [right]
+        fsub    [left]
+        fdivr   st0, st1
+        fstp    [edi + Matrix4x4.m11]
+
+        ; matrix[1][1]
+        fld     [top]
+        fsub    [bottom]
+        fdivr   st0, st1
+        fstp    [edi + Matrix4x4.m22]
+
+        ; matrix[2][2]
+        fld     [near]
+        fsub    [far]
+        fdivp
+        fstp    [edi + Matrix4x4.m33]
+
+        ; matrix[0][3]
+        fld     [right]
+        fadd    [left]
+        fld     [left]
+        fsub    [right]
+        fdivp
+        fstp    [edi + Matrix4x4.m14]
+
+        ; matrix[1][3]
+        fld     [top]
+        fadd    [bottom]
+        fld     [bottom]
+        fsub    [top]
+        fdivp
+        fstp    [edi + Matrix4x4.m24]
+
+        ; matrix[2][3]
+        fld     [far]
+        fadd    [near]
+        fld     [near]
+        fsub    [far]
+        fdivp
+        fstp    [edi + Matrix4x4.m34]
+
+        ; matrix[3][3]
+        mov     dword [edi + Matrix4x4.m44], 1.0
+
+        ret
+endp

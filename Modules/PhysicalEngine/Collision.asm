@@ -1,3 +1,4 @@
+include         "./Collision.inc"
 proc Collision.ConvertAABBtoOBB uses esi edi ebx,\
      aabb
 
@@ -229,13 +230,29 @@ proc Collision.InitAxes uses edi esi ebx,\
         ret
 endp
 
-proc Collision.OBB.Setup uses edi,\
-     obb, matrix
+proc Collision.OBB.Setup uses edi esi ebx,\
+     tank
+        locals
+                tankSize        GLfloat         0.08
 
-        ;stdcall Collision.OBB.Update, [obb], [matrix]
-        mov     edi, [obb]
-        lea     eax, [edi + OBB.h]
-        stdcall Vector3.Mul, eax, 0.08
+        endl
+
+        mov     esi, [tank]
+        mov     edi, [esi + Tank.pTurretObj]
+        mov     ebx, [edi + Object.pOBB]
+        fld     dword [ebx + OBB.h + Vector3.y]  ; load half y size from turret
+
+        mov     edi, [esi + Tank.pBodyObj]
+        mov     ebx, [edi + Object.pOBB]
+        fld     dword [ebx + OBB.h + Vector3.y]  ; load half y size from body
+        fadd    st0, st1
+        fstp    dword [ebx + OBB.h + Vector3.y]
+
+        fadd    dword [ebx + OBB.c + Vector3.y]
+        fstp    dword [ebx + OBB.c + Vector3.y]
+
+        lea     eax, [ebx + OBB.h]
+        stdcall Vector3.Mul, eax, [tankSize]
         ret
 endp
 
@@ -290,17 +307,28 @@ proc Collision.SetupModelMatrix uses esi edi ebx,\
 
         mov     ecx, [objCnt]
         mov     ebx, [Objects]          ; ebx <- array of objects pointer
+        fld     [DISTANCE_FOR_CHECK_COLLISION]
 .Collision.Loop:
-        mov     edx, ecx                ; index of object
-        dec     edx
-        shl     edx, 2                  ; offset of object in byte
-        mov     eax, [ebx + edx]
+        mov     eax, ecx                ; index of object
+        dec     eax
+        shl     eax, 2                  ; offset of object in byte
+        mov     edx, [ebx + eax]
+
+        push    ecx edx
+        stdcall Vector3.Distance, edi, [edx + Object.pOBB]
+        pop     edx ecx
+        push    eax
+        fld     dword [esp]
+        add     esp, 4
+        fcomip  st0, st1
+        ja      .SkipCheck
+
         push    ecx
-        stdcall Collision.Check, edi, [eax + Object.pOBB]
+        stdcall Collision.Check, edi, [edx + Object.pOBB]
         pop     ecx
         cmp     eax, 1
         je      .Return1
-
+.SkipCheck:
         loop    .Collision.Loop
 
         ;stdcall Collision.OBB.Copy, [esi + Object.pOBB], edi
@@ -313,6 +341,7 @@ proc Collision.SetupModelMatrix uses esi edi ebx,\
         ;stdcall Matrix.LoadIdentity, [matrix]
         mov      eax, 1
 .Return:
+        fstp    st0
         ret
 endp
 

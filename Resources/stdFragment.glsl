@@ -16,7 +16,7 @@ void main() {
     vec3 objectColor = texColor.rgb;  
 
  
-    vec3 norm = (Normal);  
+    vec3 norm = normalize(Normal);
 
 
     float diff = max(dot(norm, lightDir), 0.0);

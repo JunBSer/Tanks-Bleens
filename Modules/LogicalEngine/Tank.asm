@@ -67,9 +67,7 @@ proc    SpawnTank uses esi edi,\
 
         stdcall Matrix.Multiply, matrixS, matrixM, [esi + Tank.pModelMatrix]
 
-        push    [esi + Tank.pModelMatrix]
-        mov     eax, [esi + Tank.pBodyObj]
-        stdcall Collision.OBB.Setup, [eax + Object.pOBB] ; [esi + Tank.pModelMatrix]
+        stdcall Collision.OBB.Setup, esi
 
        ; stdcall Camera.Init, [rotations], [position], stdOffset, [mainCamera]
 
