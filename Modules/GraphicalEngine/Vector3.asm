@@ -232,7 +232,7 @@ proc Vector3.Dot uses edi esi,\
 endp
 
 proc Vector3.MulMat4 uses esi edi ebx,\
-     vector, matrix, resVector
+     vector, w, matrix, resVector
 
         locals
                 Temp dd ?
@@ -242,7 +242,8 @@ proc Vector3.MulMat4 uses esi edi ebx,\
 
         lea     eax, [source]
         stdcall Vector3.Copy, eax, [vector]
-        mov     [source.w], 1.0
+        mov     eax, [w]
+        mov     [source.w], eax
 
         lea     esi, [source]
         lea     edi, [result]

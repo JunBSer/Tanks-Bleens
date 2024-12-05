@@ -262,15 +262,15 @@ proc Collision.OBB.Update uses esi edi ebx,\
         mov     edi, [obb]
         mov     esi, [matrix]
         lea     ebx, [edi + OBB.c]
-        stdcall Vector3.MulMat4, ebx, esi, ebx
+        stdcall Vector3.MulMat4, ebx, 1.0, esi, ebx
         lea     ebx, [edi + OBB.u]
-        stdcall Collision.MulMat4, ebx, esi, ebx
+        stdcall Vector3.MulMat4, ebx, 0.0, esi, ebx
         stdcall Vector3.Normalize, ebx
         lea     ebx, [edi + OBB.v]
-        stdcall Collision.MulMat4, ebx, esi, ebx
+        stdcall Vector3.MulMat4, ebx, 0.0, esi, ebx
         stdcall Vector3.Normalize, ebx
         lea     ebx, [edi + OBB.w]
-        stdcall Collision.MulMat4, ebx, esi, ebx
+        stdcall Vector3.MulMat4, ebx, 0.0, esi, ebx
         stdcall Vector3.Normalize, ebx
         ret
 endp
@@ -343,44 +343,4 @@ proc Collision.SetupModelMatrix uses esi edi ebx,\
 .Return:
         fstp    st0
         ret
-endp
-
-proc Collision.MulMat4 uses esi edi ebx,\
-     vector, matrix, resVector
-
-        locals
-                Temp dd ?
-                source          Vector4
-                result          Vector4         0.0, 0.0, 0.0, 0.0
-        endl
-
-        lea     eax, [source]
-        stdcall Vector3.Copy, eax, [vector]
-        mov     [source.w], 0.0
-
-        lea     esi, [source]
-        lea     edi, [result]
-        mov     ebx, [matrix]
-
-        xor     ecx, ecx          ; i
-.Loop1:
-                xor     edx, edx  ; j
-        .Loop2:
-                        fld     dword [esi + edx]
-                        mov     eax, edx
-                        shl     eax, 2
-                        add     eax, ecx
-                        fmul    dword [ebx + eax]
-                        fadd    dword [edi + ecx]
-                        fstp    dword [edi + ecx]
-                add     edx, 4
-                cmp     edx, 16
-                jb      .Loop2
-        add     ecx, 4
-        cmp     ecx, 16
-        jb      .Loop1
-
-        lea     eax, [result]
-        stdcall Vector3.Copy, [resVector], eax
-  ret
 endp
