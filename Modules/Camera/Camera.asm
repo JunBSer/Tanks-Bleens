@@ -1,13 +1,25 @@
 proc Player.Move uses ebx edi esi
 
         ;stdcall MoveTank,   [tank], [mainCamera]
-        stdcall MoveCamera, [mainCamera]
+        stdcall MoveCamera, [mainCamera], [tank]
         stdcall MoveTank,   [tank], [mainCamera]
 .Return:
         ret
 endp
 
+matrixTurret    Matrix4x4
 
+proc Turret.Rotate uses esi edi ebx,\
+     matrixTurret, matrixTank, turn
+        locals
+
+        endl
+
+        mov     eax, [turn]
+        stdcall Matrix.Rotate, matrixR, [eax + Vector3.y], 0.0, 1.0, 0.0
+        stdcall Matrix.Multiply, matrixR, [matrixTurret], [matrixTurret]
+        ret
+endp
 
 proc Camera.InitLookAt uses esi edi,\
         rotations, position
@@ -116,7 +128,40 @@ proc Model.CalcPosition uses esi edi,\             ;+
         ret
 endp
 
-proc Camera.CalcPosition uses esi edi,\          ; not useble
+proc Camera.CalcPosition uses esi edi ebx,\
+     camera, pTank
+        locals
+                tempDirection           Vector3         0.0, 0.0, 0.0
+                tempTurn                Vector3         0.0, 0.0, 0.0
+        endl
+
+        mov     eax, [pTank]
+        lea     eax, [eax + Tank.position]
+        mov     edi, [camera]
+        lea     edi, [edi + Camera.position]
+        stdcall Vector3.Copy, edi, eax
+
+
+        lea     eax, [stdOffset]
+        stdcall Vector3.Add, edi, eax
+
+        mov     esi, [camera]
+        stdcall Camera.ChangeAngles, esi
+
+
+        lea     ecx, [tempTurn]
+        mov     esi, [esi + Camera.rotations + Vector3.y]
+        mov     [ecx + Vector3.y], esi
+
+        lea     ebx, [tempDirection]
+        stdcall Camera.CalcDirection, ebx, ecx
+
+        stdcall Vector3.Mul, ebx, -2.0
+        stdcall Vector3.Add, edi, ebx
+        ret
+endp
+
+proc Camera.CalcPositionOld uses esi edi,\          ; not useble
         direction, right
 
         locals
@@ -232,6 +277,8 @@ proc Camera.ChangeAngles uses edi,\                     ;+?
 
         locals
                 __90            GLfloat         89.9
+                __360           GLfloat         360.0
+                yAngle          dd              ?
         endl
 
         mov     edi, [turn]
@@ -244,6 +291,15 @@ proc Camera.ChangeAngles uses edi,\                     ;+?
         fmul    [mouseSpeed]
         fchs
         fadd    [edi + Vector3.y]
+        fistp   dword [yAngle]
+        mov     eax, dword [yAngle]
+        mov     ecx, 360
+        add     eax, ecx
+        xor     edx, edx
+        div     ecx
+        push    edx
+        fild    dword [esp]
+        add     esp, 4
         fstp    [edi + Vector3.y]
 
         mov     eax, [windowHeightH]
