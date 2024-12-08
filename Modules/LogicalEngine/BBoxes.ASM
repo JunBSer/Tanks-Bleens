@@ -2,8 +2,7 @@ proc    FindAABBStatic uses esi edi,\
         vertices, vertCnt
 
         locals
-             minPoint   dd      ?
-             maxPoint   dd      ?
+             pAABB      dd      ?
 
              minX       dd      ?
              minY       dd      ?
@@ -14,11 +13,8 @@ proc    FindAABBStatic uses esi edi,\
              maxZ       dd      ?
         endl
 
-        malloc  sizeof.Vector3
-        mov     [minPoint], eax
-
-        malloc  sizeof.Vector3
-        mov     [maxPoint], eax
+        malloc  sizeof.AABB
+        mov     [pAABB],eax
 
         mov     esi, [vertices]
         mov     ecx, [vertCnt]
@@ -47,31 +43,31 @@ proc    FindAABBStatic uses esi edi,\
 .CmpWithMinX:
         fld     [minX] ; minX  currX
         fcomip  st, st1 ;currX
-        jb      .ChangeMinX
+        ja      .ChangeMinX
 .CmpWithMaxX:
         fld     [maxX] ; maxX currX
         fcomip  st, st1; currX
-        ja      .ChangeMaxX
+        jb      .ChangeMaxX
         fstp    st  ; -
 .CmpWithMinY:
         fld     [esi + Vector3.y]; currY
         fld     [minY]  ; minY currY
         fcomip  st, st1 ; currY
-        jb      .ChangeMinY
+        ja      .ChangeMinY
 .CmpWithMaxY:
         fld     [maxY] ; maxY currY
         fcomip  st, st1; currY
-        ja      .ChangeMaxY
+        jb      .ChangeMaxY
         fstp    st
 .CmpWithMinZ:
         fld     [esi + Vector3.z]; currZ
         fld     [minZ]  ; minZ currZ
         fcomip  st, st1 ; currZ
-        jb      .ChangeMinZ
+        ja      .ChangeMinZ
 .CmpWithMaxZ:
         fld     [maxZ] ; maxZ currZ
         fcomip  st, st1; currZ
-        ja      .ChangeMaxZ
+        jb      .ChangeMaxZ
         fstp    st
         jmp     .Skip
 
@@ -103,21 +99,32 @@ proc    FindAABBStatic uses esi edi,\
 
 
 .FillPoints:
-        mov     eax, [minPoint]
-        mov     ecx, [minX]
-        mov     [eax + Vector3.x], ecx
-        mov     ecx, [minY]
-        mov     [eax + Vector3.y], ecx
-        mov     ecx, [minZ]
-        mov     [eax + Vector3.z], ecx
 
-        mov     edx, [maxPoint]
+        mov     esi, [pAABB]
+
+        ;x
+        mov     ecx, [minX]
+        mov     [esi+AABB.minPoint],ecx
+        ;y
+        mov     ecx, [minY]
+        mov     [esi+AABB.minPoint+4],ecx
+        ;z
+        mov     ecx, [minZ]
+        mov     [esi+AABB.minPoint+8],ecx
+
+
+        ;x
         mov     ecx, [maxX]
-        mov     [edx + Vector3.x], ecx
+        mov     [esi+AABB.maxPoint],ecx
+        ;y
         mov     ecx, [maxY]
-        mov     [edx + Vector3.y], ecx
+        mov     [esi+AABB.maxPoint+4],ecx
+        ;z
         mov     ecx, [maxZ]
-        mov     [edx + Vector3.z], ecx
+        mov     [esi+AABB.maxPoint+8],ecx
+
+        mov     eax, esi
+
      ret
 endp
 

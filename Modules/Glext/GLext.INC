@@ -27,6 +27,8 @@ extensionAddresses:
         glUniform1i                     dd      ?       
         glActiveTexture                 dd      ?
         glUniform3fv                    dd      ?
+        glDeleteVertexArrays            dd      ?
+        glDeleteBuffers                 dd      ?
 
 extensionNames:
         db      "glUseProgram", 0
@@ -57,6 +59,8 @@ extensionNames:
         db      "glUniform1i", 0
         db      "glActiveTexture", 0
         db      "glUniform3fv", 0
+        db      "glDeleteVertexArrays", 0
+        db      "glDeleteBuffers", 0 
         db      0
 
 define GL_FRAGMENT_SHADER                0x8B30

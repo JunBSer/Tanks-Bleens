@@ -7,12 +7,7 @@ proc    MapInit uses esi edi
         locals
         ffd               dd              ?
         hFind             dd              ?
-        tempFileMesh      dd              ?
         tempPath          dd              ?
-
-        createdMesh       dd              ?
-        minPoint          dd              ?
-        maxPoint          dd              ?
         endl
 
         xor     ebx,ebx
@@ -39,27 +34,15 @@ proc    MapInit uses esi edi
         stdcall    BuildFullPath, edx
         mov        [tempPath], eax
 
-        stdcall    File.ReadModel, eax
-
-        mov        [tempFileMesh], eax
-
-        free       [tempPath]
-
-        mov        edi, [tempFileMesh]
-
         push       edx
-        stdcall    FindAABBStatic, [edi+TempFileMesh.vertices], [edi+TempFileMesh.verticesCount]
-        mov        [minPoint], eax
-        mov        [maxPoint], edx
-        pop        edx
 
-        stdcall    CreateMesh, [edi+TempFileMesh.vertices], [edi+TempFileMesh.normals], [edi+TempFileMesh.textures], [textureID], [edi+TempFileMesh.verticesCount]
-
-        stdcall    CreateObject , eax, [minPoint], [maxPoint]
-
+        stdcall    ReadObject,eax, [mainTextID]
         stdcall    AddToObjects, eax
 
-        stdcall    TempFileMeshFree, [tempFileMesh]
+        free       [tempPath]
+        pop        edx
+
+
 
         invoke     FindNextFile, [hFind], [ffd]
 
