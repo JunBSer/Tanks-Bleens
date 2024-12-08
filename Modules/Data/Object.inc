@@ -16,3 +16,8 @@ struct OBB
         v               Vector3
         w               Vector3
 ends
+
+struct  StaticObject
+        pMesh           dd      ?
+        pModelMatrix    dd      ?
+ends

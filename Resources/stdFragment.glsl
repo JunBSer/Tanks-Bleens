@@ -1,9 +1,9 @@
 #version 330 core
 out vec4 FragColor;
 
-in vec3 FragPos; 
-in vec3 Normal;   
+in vec3 FragPos;  
 in vec2 TexCoords; 
+in vec3 Normal;  
 
 uniform sampler2D texture1;  
 uniform vec3 lightDir; 
@@ -25,11 +25,12 @@ void main() {
    
     vec3 viewDir = normalize(viewPos - FragPos);
     vec3 reflectDir = reflect(-lightDir, norm);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);      vec3 specular = spec * lightColor;
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);            
+    vec3 specular = spec * lightColor;
 
    
     vec3 ambient = 0.5 * lightColor;  
    
     vec3 finalColor = (ambient + diffuse + specular) * objectColor;
-    FragColor = vec4(finalColor, 1.0);  
+    FragColor = vec4(finalColor, texColor.a);  
 }

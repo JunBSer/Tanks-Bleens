@@ -1,7 +1,7 @@
         include         "../Data/LoadTextures.asm"
 
-        mainTxtFilePath             db     "Resources/mainText.bmp",0
-        tankTxtFilePath             db     "Resources/texture.bmp", 0
+        mainTxtFilePath             db     "Resources/mainTextTry.bmp",0
+        tankTxtFilePath             db     "Resources/textureTry.bmp", 0
 
 proc    LinkTexture uses edi,\
         pTextureData, imgSizes
@@ -24,7 +24,7 @@ proc    LinkTexture uses edi,\
 
         mov     edi, [imgSizes]
 
-        invoke  glTexImage2D, GL_TEXTURE_2D, 0, GL_RGB, [edi+Vector2.u], [edi+Vector2.v], 0, GL_RGB, GL_UNSIGNED_BYTE, [pTextureData]
+        invoke  glTexImage2D, GL_TEXTURE_2D, 0, GL_RGBA, [edi+Vector2.u], [edi+Vector2.v], 0, GL_RGBA, GL_UNSIGNED_BYTE, [pTextureData]
 
         invoke  glGenerateMipmap, GL_TEXTURE_2D
         invoke  glBindTexture, GL_TEXTURE_2D, 0

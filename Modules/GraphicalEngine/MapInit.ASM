@@ -37,7 +37,7 @@ proc    MapInit uses esi edi
         push       edx
 
         stdcall    ReadObject,eax, [mainTextID]
-        stdcall    AddToObjects, eax
+        stdcall    AddToObjects, eax, DinObjects, DinObjCap, DinObjCnt
 
         free       [tempPath]
         pop        edx

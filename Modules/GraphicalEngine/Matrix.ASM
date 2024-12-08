@@ -2,6 +2,7 @@ include         "./Vector3.asm"
 
 
 matrixPr         Matrix4x4
+matrixPrStat     Matrix4x4
 matrixV          Matrix4x4
 
 matrixR          Matrix4x4
@@ -399,7 +400,7 @@ proc Matrix.Rotate uses esi edi ebx,\
         fld     [z]
         fmul    [s]
         fsubp
-        fstp    [esi + Matrix4x4.m12]
+        fstp    [esi + Matrix4x4.m21]
 
         fld     [x]
         fmul    [z]
@@ -407,9 +408,9 @@ proc Matrix.Rotate uses esi edi ebx,\
         fld     [y]
         fmul    [s]
         faddp
-        fstp    [esi + Matrix4x4.m13]
+        fstp    [esi + Matrix4x4.m31]
 
-        mov     dword [esi + Matrix4x4.m14], 0.0
+        mov     dword [esi + Matrix4x4.m41], 0.0
 
         ; 2nd
         fld     [x]
@@ -418,7 +419,7 @@ proc Matrix.Rotate uses esi edi ebx,\
         fld     [z]
         fmul    [s]
         faddp
-        fstp    [esi + Matrix4x4.m21]
+        fstp    [esi + Matrix4x4.m12]
 
         fld     [c]
         fld     [y]
@@ -433,9 +434,9 @@ proc Matrix.Rotate uses esi edi ebx,\
         fld     [x]
         fmul    [s]
         fsubp
-        fstp    [esi + Matrix4x4.m23]
+        fstp    [esi + Matrix4x4.m32]
 
-        mov     dword [esi + Matrix4x4.m24], 0.0
+        mov     dword [esi + Matrix4x4.m42], 0.0
 
         ; 3rd
         fld     [x]
@@ -444,7 +445,7 @@ proc Matrix.Rotate uses esi edi ebx,\
         fld     [y]
         fmul    [s]
         fsubp
-        fstp    [esi + Matrix4x4.m31]
+        fstp    [esi + Matrix4x4.m13]
 
         fld     [z]
         fmul    [y]
@@ -452,7 +453,7 @@ proc Matrix.Rotate uses esi edi ebx,\
         fld     [x]
         fmul    [s]
         faddp
-        fstp    [esi + Matrix4x4.m32]
+        fstp    [esi + Matrix4x4.m23]
 
         fld     [c]
         fld     [z]
@@ -461,12 +462,12 @@ proc Matrix.Rotate uses esi edi ebx,\
         faddp
         fstp    [esi + Matrix4x4.m33]
 
-        mov     dword [esi + Matrix4x4.m34], 0.0
+        mov     dword [esi + Matrix4x4.m43], 0.0
 
         ; 4th
-        mov     dword [esi + Matrix4x4.m41], 0.0
-        mov     dword [esi + Matrix4x4.m42], 0.0
-        mov     dword [esi + Matrix4x4.m43], 0.0
+        mov     dword [esi + Matrix4x4.m14], 0.0
+        mov     dword [esi + Matrix4x4.m24], 0.0
+        mov     dword [esi + Matrix4x4.m34], 0.0
         mov     dword [esi + Matrix4x4.m44], 1.0
 
         ret
@@ -507,5 +508,66 @@ proc Matrix.Scale uses esi edi,\
 
         mov     eax, [esi + Vector3.z]
         mov     [edi + Matrix4x4.m33], eax
+        ret
+endp
+
+proc Matrix.Ortho uses edi,\
+     matrix, left, right, bottom, top, near, far
+
+        mov     edi, [matrix]
+        mov     ecx, 4 * 4
+        xor     eax, eax
+        rep     stosd
+
+        mov     edi, [matrix]
+
+        fld1
+        fld1
+        faddp
+        ; matrix[0][0]
+        fld     [right]
+        fsub    [left]
+        fdivr   st0, st1
+        fstp    [edi + Matrix4x4.m11]
+
+        ; matrix[1][1]
+        fld     [top]
+        fsub    [bottom]
+        fdivr   st0, st1
+        fstp    [edi + Matrix4x4.m22]
+
+        ; matrix[2][2]
+        fld     [near]
+        fsub    [far]
+        fdivp
+        fstp    [edi + Matrix4x4.m33]
+
+        ; matrix[0][3]
+        fld     [right]
+        fadd    [left]
+        fld     [left]
+        fsub    [right]
+        fdivp
+        fstp    [edi + Matrix4x4.m14]
+
+        ; matrix[1][3]
+        fld     [top]
+        fadd    [bottom]
+        fld     [bottom]
+        fsub    [top]
+        fdivp
+        fstp    [edi + Matrix4x4.m24]
+
+        ; matrix[2][3]
+        fld     [far]
+        fadd    [near]
+        fld     [near]
+        fsub    [far]
+        fdivp
+        fstp    [edi + Matrix4x4.m34]
+
+        ; matrix[3][3]
+        mov     dword [edi + Matrix4x4.m44], 1.0
+
         ret
 endp

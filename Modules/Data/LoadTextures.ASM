@@ -19,7 +19,7 @@ proc    LoadTexture uses esi,\
         xchg    al, [esi+ecx+2]
         xchg    al, [esi+ecx]
 
-        add     ecx,3
+        add     ecx,4
         cmp     ecx, [textureBufSize]
         jne     .TransformData
 

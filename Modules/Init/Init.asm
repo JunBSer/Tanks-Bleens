@@ -8,7 +8,9 @@
         include         "../GraphicalEngine/Matrix.asm"
         include         "../GraphicalEngine/Mesh.asm"
         include         "../Data/Object.inc"
+        include         "../Data/GameParams.inc"
         include         "../LogicalEngine/Tank.asm"
+        include         "../Camera/Camera.asm"
 
 
 proc Init uses esi
@@ -46,9 +48,15 @@ proc Init uses esi
         ;stdcall Matrix.LookAt, cameraPosition, targetPosition, upVector
 
         stdcall Glext.LoadFunctions
-        stdcall Glext.InitShaders
+
+        stdcall Glext.InitShaders, std_program, std_fragmentShader, std_frShaderFilePath, std_vertexShader, std_vrtxShaderFilePath
+
+       ; stdcall Glext.InitShaders, stat_program, stat_fragmentShader, stat_frShaderFilePath, stat_vertexShader, stat_vrtxShaderFilePath
+
         stdcall InitDraw
 
+        ;stdcall InitUIElemMtrx
 
         ret
 endp
+
