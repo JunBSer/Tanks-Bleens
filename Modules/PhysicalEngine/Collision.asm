@@ -305,8 +305,8 @@ proc Collision.SetupModelMatrix uses esi edi ebx,\
 
         stdcall Collision.OBB.Update, edi, ebx
 
-        mov     ecx, [objCnt]
-        mov     ebx, [Objects]          ; ebx <- array of objects pointer
+        mov     ecx, [DinObjCnt]
+        mov     ebx, [DinObjects]          ; ebx <- array of objects pointer
         fld     [DISTANCE_FOR_CHECK_COLLISION]
 .Collision.Loop:
         mov     eax, ecx                ; index of object

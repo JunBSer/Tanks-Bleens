@@ -37,7 +37,7 @@ proc WindowProc,\
         jmp     .Return
 
 .Paint:
-        stdcall Draw
+        stdcall DrawGame
         jmp     .ReturnZero
 
 .KeyDown:
