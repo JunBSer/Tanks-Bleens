@@ -8,8 +8,8 @@ turnModel               Vector3                 0.0, -90.0, 0.0
 
 ;Crosshair params
 crosshair               dd                      ?
-crosshairSize           dd                      ? 
-crosshairOffs           Vector3                 0.0, 0.0, -1.0    
+crosshairSize           dd                      0.25, 0.25, 0.25
+crosshairOffs           Vector3                 0.0, 0.5, -2.75    
                 
 ;Shooting params
 shootPointOffs          Vector3                 0.0, 0.5, -2.25

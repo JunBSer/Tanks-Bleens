@@ -6,9 +6,6 @@
         stat_fragmentShader      GLuint          0
         stat_vertexShader        GLuint          0
 
-        mainTextID               GLuint          0
-        tankTextID               GLuint          0
-
         std_frShaderFilePath     db              "Resources/stdFragment.glsl", 0
         std_vrtxShaderFilePath   db              "Resources/stdVertex.glsl", 0
 

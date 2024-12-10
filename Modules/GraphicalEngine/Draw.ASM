@@ -5,6 +5,9 @@
         include                  "../Data/CamMovementData.inc"
         include                  "../Data/TankMovementData.inc"
         include                  "./ShaderPrograms.inc"
+        include                  "./TestData.asm"
+        include                  "../LogicalEngine/Crosshair.asm"
+        include                  "./StaticObjects.asm"
 
 
         lightColor               Vector3         0.6, 0.6, 0.6
@@ -20,6 +23,10 @@
         DinObjCap                dd              ?
 
         tank                     dd              ?
+
+        StatObjects              dd              ?
+        StatObjCnt               dd              ?
+        StatObjCap               dd              ?
 
 proc InitDraw  uses edi
 
@@ -38,6 +45,8 @@ proc InitDraw  uses edi
      stdcall    InitTexture, tankTxtFilePath
      mov        [tankTextID], eax
 
+     stdcall    InitTexture, crosshairFilePath
+     mov        [crossTextID],eax
 
      ;Init objArr
      mov         eax, 4
@@ -72,6 +81,11 @@ proc InitDraw  uses edi
      mov     [tank], eax
 
      stdcall SpawnTank, eax, positionModel, turnModel, scaleModel, [speed]
+
+
+     stdcall CreateStaticObject, vert, text, normals, [crossTextID], [vertCnt]
+     mov     [crosshair], eax
+     stdcall InitCrosshair, [crosshair], [tank], shootPointOffs, crosshairOffs, crosshairSize
 
         ret
 endp
@@ -146,16 +160,10 @@ proc DrawGame uses esi ebx
      @@:
 
         stdcall    DrawTank, [tank]
-
-;Draw static objects
-        ;invoke     glUseProgram, [stat_program]
-
-        ;invoke     glUniformMatrix4fv,[stViewMatrixLocation],1,GL_FALSE, matrixM
-        ;invoke     glUniformMatrix4fv,[stProjMatrixLocation],1,GL_FALSE, matrixPr
+        stdcall    DrawStaticObject, [crosshair]
 
 
-
-
+.Return:
         invoke     glUseProgram, ebx
         invoke     SwapBuffers, [hdc]
         ret

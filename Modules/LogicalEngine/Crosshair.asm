@@ -7,7 +7,7 @@ proc SetCrosshairPos uses esi edi ebx,\
 
      mov        edi, [crosshairPos]
      mov        esi, [tankPos]
-     stdcall    Vecto3.Copy, edi, esi
+     stdcall    Vector3.Copy, edi, esi
 
      mov        esi, [modelDirection]
      lea        edi, [temp]
@@ -20,7 +20,7 @@ proc SetCrosshairPos uses esi edi ebx,\
      stdcall    Vector3.Mul, edi,eax
 
      mov        esi, [crosshairPos]
-     stdcall    Vector3.Add, esi, edi
+     stdcall    Vector3.Sub, esi, edi
 
      fld        dword [esi + Vector3.y]
      push       ebx
@@ -51,19 +51,20 @@ proc InitCrosshair uses edi esi ebx,\
      lea        ebx, [modelDirection]
      stdcall    Camera.CalcDirection, ebx, ecx
 
-     lea        eax, [temp]
-     stdcall    Vector3.Copy, eax, [shootPointOffs]
-     stdcall    Vector3.Add, eax, [crosshairOffs]
+     stdcall    Vector3.Normalize, ebx
+
+
      lea        edx, [crosshairPos]
      lea        ecx, [esi + Tank.position]
-     stdcall    SetCrosshairPos, edx, ecx, ebx, eax
+     stdcall    SetCrosshairPos, edx, ecx, ebx, [crosshairOffs]
 
-     stdcall    Matrix.Scale, MatrixS, [crossScale]
+
+     stdcall    Matrix.Scale, matrixS, [crossScale]
 
      lea        eax, [crosshairPos]
-     stdcall    Matrix.Translate, MatrixT, eax
+     stdcall    Matrix.Translate, matrixT, eax
 
-     stdcall    Matrix.Multiply, MatrixS, MatrixT, [edi + StaticObject.pModelMatrix]
+     stdcall    Matrix.Multiply, matrixS, matrixT, [edi + StaticObject.pModelMatrix]
 
     ret
 endp

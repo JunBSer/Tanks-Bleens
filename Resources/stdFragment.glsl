@@ -15,6 +15,9 @@ void main() {
     vec4 texColor = texture(texture1, TexCoords);
     vec3 objectColor = texColor.rgb;  
 
+    if (texColor.a<0.01){
+	return;
+    }
  
     vec3 norm = (Normal);  
 

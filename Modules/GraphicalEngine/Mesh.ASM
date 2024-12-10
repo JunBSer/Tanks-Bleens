@@ -11,8 +11,10 @@ proc CreateMesh uses esi edi ebx,\
      ;invoke     glGetIntegerv, GL_VERTEX_ARRAY_BINDING, currVao              ;TODO return current context (in future)
      ;invoke     glGetIntegerv, GL_ARRAY_BUFFER_BINDING, currVbo
 
+
      malloc     sizeof.Mesh
      mov        [pMesh],eax
+
      mov        esi,[pMesh]
 
      mov        ecx,[vertexCnt]
@@ -51,7 +53,7 @@ proc CreateMesh uses esi edi ebx,\
      invoke     glEnableVertexAttribArray, 1
 
      cmp        [normals], ebx
-     jne        .FillNormals
+     jne         .FillNormals
      mov        [esi+Mesh.VBOnorm], 0
      jmp        .Skip
 

@@ -39,6 +39,8 @@ proc Init uses esi
         invoke  wglMakeCurrent, [hdc], eax
 
         invoke  glEnable, GL_DEPTH_TEST
+        invoke  glEnable, GL_BLEND
+        invoke  glBlendFunc, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
 
         invoke  glShadeModel, GL_SMOOTH
         invoke  glHint, GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST
@@ -55,7 +57,7 @@ proc Init uses esi
 
         stdcall InitDraw
 
-        ;stdcall InitUIElemMtrx
+        stdcall InitUIElemMtrx
 
         ret
 endp

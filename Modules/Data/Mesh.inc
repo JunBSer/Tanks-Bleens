@@ -26,3 +26,4 @@ struct Mesh
         vertexCnt       dd                   ? 
         textureID       GLuint               ?        
 ends 
+
