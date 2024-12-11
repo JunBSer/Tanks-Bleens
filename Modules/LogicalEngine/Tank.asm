@@ -75,50 +75,64 @@ proc    SpawnTank uses esi edi,\
 endp
 
 
-proc   MoveTank uses esi edi ebx,\
-       pTank, camera
+proc    MoveTank uses esi edi ebx,\
+        pTank, camera
 
-       locals
+        locals
                 turnModel               Vector3         0.0, 0.0, 0.0
                 displacement            Vector3         0.0, 0.0, 0.0
                 modelDirection          Vector3         0.0, 0.0, 0.0
-       endl
-
-       stdcall Model.KeyState.Update, KeyState
-
-       lea     esi, [turnModel]
-       stdcall Model.CalcTurn, esi, [rotationSpeedModel]
-       mov      edi, [pTank]
-
-       lea     ebx, [modelDirection]
-       stdcall Camera.CalcDirection, ebx, esi
-
-       lea      esi, [displacement]
-
-       stdcall  Model.CalcPosition, esi, ebx, [edi + Tank.speed]
-
-       stdcall  Matrix.Rotate, matrixR, [turnModel.y], 0.0, 1.0, 0.0
+                tempTurn                Vector3         0.0, 0.0, 0.0
+        endl
 
 
-       stdcall  Matrix.Translate, matrixT, esi
+        stdcall Model.KeyState.Update, KeyState
 
-       stdcall Matrix.Multiply, matrixT, matrixR, matrixM
-       ;
-       stdcall Collision.SetupModelMatrix, edi, matrixM
-       cmp     eax, 1
-       je      .Return
+        lea     esi, [turnModel]
+        stdcall Model.CalcTurn, esi, [rotationSpeedModel]
+        mov     edi, [pTank]
 
-       mov     esi, [edi + Tank.pModelMatrix]
-       lea     esi, [esi + Matrix4x4.m41]
-       lea     eax, [edi + Tank.position]
-       stdcall Vector3.Copy, eax, esi
+        lea     ebx, [modelDirection]
+        stdcall Camera.CalcDirection, ebx, esi
 
-       mov      edi, [camera]
-       lea      esi, [turnModel]
-       lea      edi, [edi + Camera.rotations]
-       stdcall  Vector3.Sub, edi, esi
+        lea     esi, [displacement]
+
+        stdcall Model.CalcPosition, esi, ebx, [edi + Tank.speed]
+
+        stdcall Matrix.Rotate, matrixR, [turnModel.y], 0.0, 1.0, 0.0
+
+
+        stdcall Matrix.Translate, matrixT, esi
+
+        stdcall Matrix.Multiply, matrixT, matrixR, matrixM
+        ;
+        stdcall Collision.SetupModelMatrix, edi, matrixM
+        cmp     eax, 1
+        je      .Return
+
+        mov     esi, [edi + Tank.pModelMatrix]
+        lea     esi, [esi + Matrix4x4.m41]
+        lea     eax, [edi + Tank.position]
+        stdcall Vector3.Copy, eax, esi
+
+        mov     edi, [camera]
+        lea     esi, [turnModel]
+        lea     edi, [edi + Camera.rotations]
+        stdcall Vector3.Sub, edi, esi
+
+        mov     edi, [pTank]
+        lea     eax, [edi + Tank.rotations]
+        lea     esi, [turnModel]
+        stdcall Vector3.Sub, eax, esi
+
+
 .Return:
-    ret
+        mov     eax, [camera]
+        mov     eax, [eax + Camera.rotations + Vector3.y]
+        mov     dword [tempTurn + Vector3.y], eax
+        lea     eax, [tempTurn]
+        stdcall Turret.Rotate, matrixTurret, [pTank], eax
+        ret
 endp
 
 
@@ -130,11 +144,14 @@ proc    MoveCamera uses esi edi ebx,\
                 up                      Vector3         0.0, 0.0, 0.0
                 right                   Vector3         0.0, 0.0, 0.0
                 tempTarget              Vector3         0.0, 0.0, 0.0
+                tempTurn                Vector3         0.0, 0.0, 0.0
         endl
+
+
 
         mov     edi, [camera]
         lea     ebx, [edi+Camera.rotations]
-        stdcall Camera.CalcPosition, [camera], [pTank]
+        stdcall Camera.CalcPosition, edi, [pTank]
 
         ;fld     [ebx + Vector3.x]
         ;fldz

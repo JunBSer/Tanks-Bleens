@@ -7,17 +7,25 @@ proc Player.Move uses ebx edi esi
         ret
 endp
 
-matrixTurret    Matrix4x4
 
-proc Turret.Rotate uses esi edi ebx,\
-     matrixTurret, matrixTank, turn
+
+proc Turret.Rotate uses edi esi ebx,\
+     matrixTurret, pTank, turn
+
         locals
-
+                yAngle          GLfloat         ?
         endl
 
         mov     eax, [turn]
-        stdcall Matrix.Rotate, matrixR, [eax + Vector3.y], 0.0, 1.0, 0.0
-        stdcall Matrix.Multiply, matrixR, [matrixTurret], [matrixTurret]
+
+        mov     edi, [pTank]
+        fld     dword [eax + Vector3.y]
+        fsub    dword [edi + Tank.rotations + Vector3.y]
+        fchs
+        fstp    dword [yAngle]
+        stdcall Matrix.Rotate, matrixR, [yAngle], 0.0, 1.0, 0.0
+
+        stdcall Matrix.Multiply, matrixR, [edi + Tank.pModelMatrix], [matrixTurret]
         ret
 endp
 

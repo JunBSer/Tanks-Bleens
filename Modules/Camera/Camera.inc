@@ -3,8 +3,8 @@ mainCamera              dd                      ?
 stdOffset               Vector3                 0.0, 1.5, 0.0
 
 
-position                Vector3                 2.0, 2.0, -2.0
-turn                    Vector3                 40.0, 0.0, 0.0
+;position                Vector3                 2.0, 2.0, -2.0
+;turn                    Vector3                 40.0, 0.0, 0.0
 
 mouseSpeed              GLfloat                 0.03
 
