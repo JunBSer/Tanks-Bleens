@@ -21,45 +21,47 @@ proc Glext.LoadFunctions uses esi edi ebx
         ret
 endp
 
-proc Glext.InitShaders  uses ebx
+proc Glext.InitShaders  uses ebx esi edi,\
+     pProgram, pFragShader, frShaderFilePath, pVertShader,vrtxShaderFilePath
         xor     ebx,ebx
         invoke  glUseProgram, ebx
 
-        cmp     [program], ebx
+        mov     esi, [pProgram]
+        cmp     [esi], ebx
         je      @F
 
-        invoke  glDetachShader, [program], [fragmentShader]
-        invoke  glDeleteShader, [fragmentShader]
-        invoke  glDeleteProgram, [program]
+        mov     edi, [pFragShader]
+        invoke  glDetachShader, [esi], [edi]
+        invoke  glDeleteShader, [edi]
+        invoke  glDeleteProgram, [esi]
 
 @@:
-        stdcall Glext.LoadShader, vrtxShaderFilePath, GL_VERTEX_SHADER
-        mov     [vertexShader],eax
+        mov     edi, [pVertShader]
+        stdcall Glext.LoadShader, [vrtxShaderFilePath], GL_VERTEX_SHADER
+        mov     [edi],eax
 
 
         cmp     eax, ebx
         je      .Return
 
-        stdcall Glext.LoadShader, frShaderFilePath, GL_FRAGMENT_SHADER
-        mov     [fragmentShader], eax
+        mov     edi, [pFragShader]
+        stdcall Glext.LoadShader, [frShaderFilePath], GL_FRAGMENT_SHADER
+        mov     [edi], eax
 
         cmp     eax,ebx
         jne     @F
 
-        mov     [program], ebx
+        mov     [esi], ebx
         jmp     .Return
 
 @@:
-        stdcall Glext.CreateProgram, [vertexShader], [fragmentShader]
-        mov     [program], eax
+        mov     eax, [pVertShader]
+        stdcall Glext.CreateProgram, [eax], [edi]
+        mov     [esi], eax
 
         cmp     eax, ebx
         je      .Return
 
-       ; invoke  glGetUniformLocation, [program], timeName
-       ; mov     [timeLocation], eax
-       ; invoke  glGetUniformLocation, [program], sizeName
-       ; mov     [sizeLocation], eax
 
 .Return:
         ret
@@ -69,7 +71,7 @@ proc Glext.CreateProgram uses ebx,\
      vertexShader, fragmentShader
 
         locals
-                progam  dd      ?
+                program  dd      ?
                 linked  dd      ?
         endl
 

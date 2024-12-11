@@ -2,8 +2,6 @@
         tankBModelPath   db      "Resources/Tank/tankBody.obj", 0
         tankTModelPath   db      "Resources/Tank/tankTurret.obj", 0
 
-
-
 proc    CreateTank uses esi\
 
         locals
@@ -76,7 +74,8 @@ endp
 
 
 proc    MoveTank uses esi edi ebx,\
-        pTank, camera
+        pTank, pCross, camera
+
 
         locals
                 turnModel               Vector3         0.0, 0.0, 0.0
@@ -132,6 +131,9 @@ proc    MoveTank uses esi edi ebx,\
         mov     dword [tempTurn + Vector3.y], eax
         lea     eax, [tempTurn]
         stdcall Turret.Rotate, matrixTurret, [pTank], eax
+
+        stdcall ChangeCrosshairPos, [pCross], matrixTurret, crosshairOffs
+
         ret
 endp
 

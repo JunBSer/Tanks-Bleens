@@ -2,6 +2,7 @@ include         "./Vector3.asm"
 
 
 matrixPr         Matrix4x4
+matrixPrStat     Matrix4x4
 matrixV          Matrix4x4
 matrixTurret     Matrix4x4
 matrixR          Matrix4x4

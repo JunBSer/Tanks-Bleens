@@ -1,62 +1,43 @@
-        include         "./Textures.asm"
-        include         "./UniformLocations.inc"
-        include         "./MapInit.asm"
-        include         "./DrawTank.asm"
-
-        program             GLint           0
-        fragmentShader      GLuint          0
-        vertexShader        GLuint          0
-        mainTextID          GLuint          0
-        tankTextID          GLuint          0
-
-        frShaderFilePath    db              "Resources/stdFragment.glsl", 0
-        vrtxShaderFilePath  db              "Resources/stdVertex.glsl", 0
+        include                  "./Textures.asm"
+        include                  "./UniformLocations.inc"
+        include                  "./MapInit.asm"
+        include                  "./DrawTank.asm"
+        include                  "../Data/CamMovementData.inc"
+        include                  "../Data/TankMovementData.inc"
+        include                  "./ShaderPrograms.inc"
+        include                  "./TestData.asm"
+        include                  "../LogicalEngine/Crosshair.asm"
+        include                  "./StaticObjects.asm"
 
 
-        cameraPosition  Vector3         0.0, 0.0, 15.0
-        targetPosition  Vector3         0.0, 0.0, 0.0
-        upVector        Vector3         0.0, 1.0, 0.0
+        lightColor               Vector3         0.6, 0.6, 0.6
+        lightDir                 Vector3         0.0, 1.0, 0.5
 
-        lightColor      Vector3         0.6, 0.6, 0.6
-        lightDir        Vector3         0.0, 1.0, 0.5
 
-        radian          GLfloat         57.32
-        fovY            dd              60.0
-        zNear           dd              0.001
-        zFar            dd              1000.0
+        radian                   GLfloat         57.32
+        fovY                     dd              60.0
+        zNear                    dd              0.001
+        zFar                     dd              1000.0
 
-        Objects         dd              ?
-        objCnt          dd              ?
-        objCap          dd              ?
 
-        tank            dd              ?
+        DinObjects               dd              ?
+        DinObjCnt                dd              ?
+        DinObjCap                dd              ?
+
+        tank                     dd              ?
+
+        StatObjects              dd              ?
+        StatObjCnt               dd              ?
+        StatObjCap               dd              ?
 
 proc InitDraw  uses edi
 
      locals
           aspect          dd              ?
      endl
-     ;GetUniforms
-     invoke     glGetUniformLocation, [program],modelMtrxName
-     mov        [modelMatrixLocation],eax
-
-     invoke     glGetUniformLocation, [program],viewMtrxName
-     mov        [viewMatrixLocation],eax
-
-     invoke     glGetUniformLocation, [program],projMtrxName
-     mov        [projMatrixLocation],eax
-
-     invoke     glGetUniformLocation, [program],textName
-     mov        [samplerLocation],eax
-
-     invoke     glGetUniformLocation, [program],LDName
-     mov        [lightDirLocation],eax
-
-     invoke     glGetUniformLocation, [program],VPName
-     mov        [viewPosLocation],eax
-
-     invoke     glGetUniformLocation, [program],LCName
-     mov        [lightColorLocation],eax
+     ;GetUniforms for std shader program
+     ;stdcall    InitStatProgUniforms, [stat_program]
+     stdcall    InitStdProgUniforms, [std_program]
 
 
      ;Init textures
@@ -66,14 +47,16 @@ proc InitDraw  uses edi
      stdcall    InitTexture, tankTxtFilePath
      mov        [tankTextID], eax
 
+     stdcall    InitTexture, crosshairFilePath
+     mov        [crossTextID],eax
 
      ;Init objArr
      mov         eax, 4
-     mov         [objCap],eax
+     mov         [DinObjCap],eax
      shl         eax,2
      malloc      eax
-     mov         [Objects],eax
-     mov         [objCnt],0
+     mov         [DinObjects],eax
+     mov         [DinObjCnt],0
 
 
      ;Init camera
@@ -81,7 +64,7 @@ proc InitDraw  uses edi
      mov     [mainCamera], eax
 
      lea     eax, [aspect]
-     stdcall InitDrawParams, eax
+     stdcall InitGameDrawParams, eax
      stdcall Camera.Init, rotations, positionModel, stdOffset, [mainCamera]
 
      ;Init matrices
@@ -94,10 +77,17 @@ proc InitDraw  uses edi
      stdcall Matrix.Projection, [aspect], [fovY], [zNear], [zFar]
 
 
+
+
      stdcall CreateTank
      mov     [tank], eax
 
      stdcall SpawnTank, eax, positionModel, turnModel, scaleModel, [speed]
+
+
+     stdcall CreateStaticObject, vert, text, normals, [crossTextID], [vertCnt]
+     mov     [crosshair], eax
+     ;stdcall InitCrosshair, [crosshair], [tank], shootPointOffs, crosshairOffs, crosshairSize
 
         ret
 endp
@@ -125,14 +115,12 @@ proc DrawObject uses edi,\
 endp
 
 
-proc Draw uses esi ebx
+proc DrawGame uses esi ebx
 ;Limit frame freq
 
         invoke  glClearColor, 0.3, 0.3, 0.3, 1.0
         invoke  glClear, GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT
 
-        cmp        [program], ebx
-        je         @F
 
         invoke  GetTickCount
         mov     edx, eax
@@ -144,8 +132,8 @@ proc Draw uses esi ebx
         stdcall    Player.Move
 
 .AfterLimitation:
-
-        invoke     glUseProgram, [program]
+;Draw dinamic objects
+        invoke     glUseProgram, [std_program]
         invoke     glUniform3fv, [lightDirLocation], 1, lightDir
         invoke     glUniform3fv, [lightColorLocation], 1, lightColor
         lea        eax,[mainCamera + Camera.position]
@@ -156,31 +144,31 @@ proc Draw uses esi ebx
         invoke     glUniformMatrix4fv,[viewMatrixLocation],1,GL_FALSE, matrixV
         invoke     glUniformMatrix4fv,[projMatrixLocation],1,GL_FALSE, matrixPr
 
-        mov     ecx,[objCnt]
+        mov     ecx,[DinObjCnt]
 
 .DrawLoop:
-        mov        esi, [objCnt]
+        mov        esi, [DinObjCnt]
         sub        esi, ecx
         shl        esi,2
 
-        mov        eax, [Objects]
+        mov        eax, [DinObjects]
         push       ecx
 
         stdcall    DrawObject,  dword[eax+esi]
 
-        ;invoke     glBindVertexArray, 0
-
         pop     ecx
         loop    .DrawLoop
-
-
-
-
 
      @@:
 
         stdcall    DrawTank, [tank]
 
+        invoke  glDisable, GL_DEPTH_TEST
+        stdcall DrawStaticObject, [crosshair]
+        invoke  glEnable, GL_DEPTH_TEST
+
+
+.Return:
         invoke     glUseProgram, ebx
         invoke     SwapBuffers, [hdc]
         ret
@@ -196,12 +184,12 @@ proc    ReleaseGraphicsResources uses esi edi
         invoke     glUseProgram, ebx
 
 
-        mov     ecx, [objCnt]
-        mov     esi, [Objects]
+        mov     ecx, [DinObjCnt]
+        mov     esi, [DinObjects]
 
 .LoopFree:
         push    ecx
-        mov     edx, [objCnt]
+        mov     edx, [DinObjCnt]
         sub     edx, ecx
 
         push    edx
@@ -238,7 +226,7 @@ proc    ReleaseGraphicsResources uses esi edi
 endp
 
 
-proc InitDrawParams uses ebx,\
+proc InitGameDrawParams uses ebx,\
      aspect
 
      invoke  glViewport, ebx, ebx, [clientRect.right], [clientRect.bottom]
@@ -258,6 +246,67 @@ proc InitDrawParams uses ebx,\
      mov     [windowHeightH], eax
      xor     eax, eax
      invoke  SetCursorPos, [windowWidthH], [windowHeightH]
+
+    ret
+endp
+
+proc InitUIElemMtrx
+     locals
+         height         dd      ?
+         width          dd      ?
+     endl
+     fild       dword[clientRect.right]
+     fstp       dword[width]
+
+     fild       dword[clientRect.bottom]
+     fstp       dword[height]
+
+     stdcall Matrix.Ortho, matrixPrStat, 0.0, [width], 0.0, [height], -1.0, 1.0
+
+     ret
+endp
+
+proc InitStdProgUniforms,\
+     program
+
+     invoke     glGetUniformLocation, [program],modelMtrxName
+     mov        [modelMatrixLocation],eax
+
+     invoke     glGetUniformLocation, [program],viewMtrxName
+     mov        [viewMatrixLocation],eax
+
+     invoke     glGetUniformLocation, [program],projMtrxName
+     mov        [projMatrixLocation],eax
+
+     invoke     glGetUniformLocation, [program],textName
+     mov        [samplerLocation],eax
+
+     invoke     glGetUniformLocation, [program],LDName
+     mov        [lightDirLocation],eax
+
+     invoke     glGetUniformLocation, [program],VPName
+     mov        [viewPosLocation],eax
+
+     invoke     glGetUniformLocation, [program],LCName
+     mov        [lightColorLocation],eax
+
+    ret
+endp
+
+proc InitStatProgUniforms,\
+     program
+
+     invoke     glGetUniformLocation, [program],stModelMtrxName
+     mov        [stModelMatrixLocation],eax
+
+     invoke     glGetUniformLocation, [program],stViewMtrxName
+     mov        [stViewMatrixLocation],eax
+
+     invoke     glGetUniformLocation, [program],stProjMtrxName
+     mov        [stProjMatrixLocation],eax
+
+     invoke     glGetUniformLocation, [program],stTextName
+     mov        [stSamplerLocation],eax
 
     ret
 endp
