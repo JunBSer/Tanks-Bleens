@@ -85,7 +85,7 @@ proc InitDraw  uses edi
 
      stdcall CreateStaticObject, vert, text, normals, [crossTextID], [vertCnt]
      mov     [crosshair], eax
-     stdcall InitCrosshair, [crosshair], [tank], shootPointOffs, crosshairOffs, crosshairSize
+     ;stdcall InitCrosshair, [crosshair], [tank], shootPointOffs, crosshairOffs, crosshairSize
 
         ret
 endp
@@ -160,7 +160,10 @@ proc DrawGame uses esi ebx
      @@:
 
         stdcall    DrawTank, [tank]
-        stdcall    DrawStaticObject, [crosshair]
+
+        invoke  glDisable, GL_DEPTH_TEST
+        stdcall DrawStaticObject, [crosshair]
+        invoke  glEnable, GL_DEPTH_TEST
 
 
 .Return:

@@ -69,5 +69,21 @@ proc InitCrosshair uses edi esi ebx,\
     ret
 endp
 
+proc ChangeCrosshairPos ,\
+     pCross, turretMatrix, crosshairOffset
+
+     locals
+         __90           dd      90.0
+     endl
+
+
+     stdcall    Matrix.Rotate, matrixR, [__90], 0.0, 1.0, 0.0
+     stdcall    Matrix.Translate, matrixT, [crosshairOffset]
+     stdcall    Matrix.Multiply, matrixT, matrixR, matrixS
+     mov        eax, [pCross]
+     stdcall    Matrix.Multiply, matrixS, [turretMatrix], [eax + StaticObject.pModelMatrix]
+    ret
+endp
+
 
 
