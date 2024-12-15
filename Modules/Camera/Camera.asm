@@ -1,8 +1,9 @@
 proc Player.Move uses ebx edi esi
 
         stdcall MoveCamera, [mainCamera], [tank]
-        stdcall MoveTank,   [tank], [crosshair], [mainCamera]
+        stdcall MoveTank,   [tank], [mainCamera]
 
+        stdcall Player.Shoot, [tank], fShoot, [Targets], [TargetCnt], [DinObjects], [DinObjCnt]
 .Return:
         ret
 endp
@@ -77,7 +78,7 @@ proc Model.CalcTurn uses edi,\
         test    eax, 0x8000
         jz      .PressD
         fldz     ;[edi + Vector3.y]
-        cmp     dword [KeyState], VK_W
+        cmp     dword [keyState], VK_W
         jne     .BackwardA
 .ForwardA:
         fadd    [rotateSpeed]
@@ -91,7 +92,7 @@ proc Model.CalcTurn uses edi,\
         test    eax, 0x8000
         jz      .Skip
         fld     [edi + Vector3.y]
-        cmp     dword [KeyState], VK_W
+        cmp     dword [keyState], VK_W
         jne     .BackwardD
 .ForwardD:
         fsub    [rotateSpeed]

@@ -5,6 +5,7 @@ ends
 
 struct Turret
     rotations       Vector3 
+    pTurretMatrix   dd          ?
 ends
 struct Tank
     pBodyObj        dd          ?
@@ -20,4 +21,7 @@ struct Tank
     scale           Vector3     ?
 
     speed           dd          ?
+
+
+    hp              dd          ?
 ends

@@ -11,6 +11,7 @@
         include         "../Data/GameParams.inc"
         include         "../LogicalEngine/Tank.asm"
         include         "../Camera/Camera.asm"
+        include         "../LogicalEngine/Shooting.asm"
 
 
 proc Init uses esi
@@ -45,17 +46,13 @@ proc Init uses esi
         invoke  glShadeModel, GL_SMOOTH
         invoke  glHint, GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST
 
-       ; invoke  glMatrixMode, GL_MODELVIEW
-       ; invoke  glLoadIdentity
-        ;stdcall Matrix.LookAt, cameraPosition, targetPosition, upVector
-
         stdcall Glext.LoadFunctions
 
         stdcall Glext.InitShaders, std_program, std_fragmentShader, std_frShaderFilePath, std_vertexShader, std_vrtxShaderFilePath
 
        ; stdcall Glext.InitShaders, stat_program, stat_fragmentShader, stat_frShaderFilePath, stat_vertexShader, stat_vrtxShaderFilePath
 
-        stdcall InitDraw
+        stdcall InitDrawGame
 
         stdcall InitUIElemMtrx
 

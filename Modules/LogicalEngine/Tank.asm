@@ -15,13 +15,16 @@ proc    CreateTank uses esi\
 
 ;Create Body object
         stdcall    ReadObject, tankBModelPath, [tankTextID]
-        mov        [esi+Tank.pBodyObj], eax
+        mov        [esi + Tank.pBodyObj], eax
 ;Create Turret object
         stdcall    ReadObject, tankTModelPath, [tankTextID]
-        mov        [esi+Tank.pTurretObj], eax
+        mov        [esi + Tank.pTurretObj], eax
 
         malloc     sizeof.Matrix4x4
-        mov        [esi+Tank.pModelMatrix],eax
+        mov        [esi + Tank.pModelMatrix],eax
+
+        malloc     sizeof.Matrix4x4
+        mov        [esi + Tank.turret + Turret.pTurretMatrix],eax
 
         mov        eax, esi
 
@@ -65,16 +68,19 @@ proc    SpawnTank uses esi edi,\
 
         stdcall Matrix.Multiply, matrixS, matrixM, [esi + Tank.pModelMatrix]
 
+        stdcall Matrix.Copy, [esi + Tank.turret + Turret.pTurretMatrix], [esi + Tank.pModelMatrix]
+
         stdcall Collision.OBB.Setup, esi
 
        ; stdcall Camera.Init, [rotations], [position], stdOffset, [mainCamera]
 
+        mov     [esi  + Tank.hp], 100
     ret
 endp
 
 
 proc    MoveTank uses esi edi ebx,\
-        pTank, pCross, camera
+        pTank, camera
 
 
         locals
@@ -85,7 +91,7 @@ proc    MoveTank uses esi edi ebx,\
         endl
 
 
-        stdcall Model.KeyState.Update, KeyState
+        stdcall Model.KeyState.Update, keyState
 
         lea     esi, [turnModel]
         stdcall Model.CalcTurn, esi, [rotationSpeedModel]
@@ -130,9 +136,9 @@ proc    MoveTank uses esi edi ebx,\
         mov     eax, [eax + Camera.rotations + Vector3.y]
         mov     dword [tempTurn + Vector3.y], eax
         lea     eax, [tempTurn]
-        stdcall Turret.Rotate, matrixTurret, [pTank], eax
+        stdcall Turret.Rotate, [edi + Tank.turret + Turret.pTurretMatrix], [pTank], eax
 
-        stdcall ChangeCrosshairPos, [pCross], matrixTurret, crosshairOffs
+        stdcall ChangeDependPos, [edi + Tank.turret + Turret.pTurretMatrix]
 
         ret
 endp

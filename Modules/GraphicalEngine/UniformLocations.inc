@@ -24,9 +24,6 @@
         stModelMatrixLocation             GLint   ?
         stModelMtrxName                   db      "model",0   
 
-        stViewMatrixLocation              GLint   ?
-        stViewMtrxName                    db      "view",0
-
         stProjMatrixLocation              GLint   ?
         stProjMtrxName                    db      "projection",0      
 

@@ -9,6 +9,8 @@
 
         hdc                     dd      ?
 
+        appState                dd      ?
+
 ;display Params        
 
         windowWidthH            dd                      0

@@ -3,11 +3,12 @@
         mainTxtFilePath             db     "Resources/mainTextTry.bmp",0
         tankTxtFilePath             db     "Resources/textureTry.bmp", 0
         crosshairFilePath           db     "Resources/crosshair.bmp", 0
+        shootFilePath                db     "Resources/shoot.bmp", 0
 
         mainTextID               GLuint          0
         tankTextID               GLuint          0
         crossTextID              GLuint          0
-
+        shootTextID              GLuint          0
 
 proc    LinkTexture uses edi,\
         pTextureData, imgSizes

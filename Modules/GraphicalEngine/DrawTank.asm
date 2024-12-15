@@ -10,7 +10,7 @@ proc    DrawTank uses esi edi,\
 
         mov        esi, [edi + Tank.pTurretObj]
 
-        invoke     glUniformMatrix4fv,[modelMatrixLocation],1,GL_FALSE, matrixTurret
+        invoke     glUniformMatrix4fv,[modelMatrixLocation],1,GL_FALSE, [edi + Tank.turret + Turret.pTurretMatrix]
         stdcall    DrawObject, esi
 
     ret
