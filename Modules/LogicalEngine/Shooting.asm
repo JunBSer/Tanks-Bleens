@@ -19,9 +19,14 @@ proc rayOBBIntersection uses edi esi ebx,\
          tMin           GLfloat              0.0
          tMax           GLfloat              7FFFFFFFh
 
+         tempRayDir     Vector3
      endl
 
          mov            edi, [pOBB]
+
+         lea            ebx, [tempRayDir]
+         stdcall        Vector3.Copy, ebx, [pRayDirection]
+         mov            [pRayDirection], ebx
 
          stdcall        Matrix.Rotate,  matrixR, 180.0, 0.0, 1.0, 0.0
          stdcall        Vector3.MulMat4, [pRayDirection], 1.0, matrixR, [pRayDirection]
@@ -155,7 +160,6 @@ proc    CheckAxis uses esi,\
         jmp    .ReturnTrue
 .CheckIfIntersect:
         fstp    dword [tempVal]
-        fstp    dword [tempVal]
 
         fld     dword [halfSize]
         fld     dword [e]
@@ -212,6 +216,7 @@ proc Player.Shoot uses esi edi ebx,\
      stdcall    Vector3.MulMat4, esi, 0.0, matrixM, esi
      stdcall    Vector3.Normalize, esi
 
+
      ;Check for ray collisions with targets
      mov        edi, [targets]
      mov        ecx, [targetCnt]
@@ -239,6 +244,8 @@ proc Player.Shoot uses esi edi ebx,\
      cmp        eax, false
 
      je         .SkipTargetInters
+
+
 
      minf       minT, currMinT, currMinT
 

@@ -15,3 +15,13 @@ proc    DrawTank uses esi edi,\
 
     ret
 endp
+
+proc    DrawTarget, \
+        position, rotation, turretRot
+
+
+
+
+
+        ret
+endp
