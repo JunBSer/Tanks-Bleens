@@ -13,18 +13,14 @@ endp
 proc Turret.Rotate uses edi esi ebx,\
      matrixTurret, pTank, turn
 
-        locals
-                yAngle          GLfloat         ?
-        endl
-
         mov     eax, [turn]
 
         mov     edi, [pTank]
         fld     dword [eax + Vector3.y]
         fsub    dword [edi + Tank.rotations + Vector3.y]
         fchs
-        fstp    dword [yAngle]
-        stdcall Matrix.Rotate, matrixR, [yAngle], 0.0, 1.0, 0.0
+        fstp    dword [edi + Tank.turret + Turret.rotations + Vector3.y]
+        stdcall Matrix.Rotate, matrixR, [edi + Tank.turret + Turret.rotations + Vector3.y], 0.0, 1.0, 0.0
 
         stdcall Matrix.Multiply, matrixR, [edi + Tank.pModelMatrix], [matrixTurret]
         ret

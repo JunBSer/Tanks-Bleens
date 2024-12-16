@@ -55,7 +55,8 @@ proc    SpawnTank uses esi edi,\
         ;Init turret rotations
         lea     eax, [esi + Tank.turret]
         lea     eax, [eax + Turret.rotations]
-        stdcall Vector3.Copy, eax, [rotations]
+
+        memset  eax, 0.0, sizeof.Vector3
 
         ; Init Model matrix
         stdcall Matrix.Scale, matrixS, [scale]

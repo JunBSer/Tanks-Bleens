@@ -11,7 +11,7 @@ macro case label, [value]
 
 macro memset address, value, count
 {
-        mov     edi, adress
+        mov     edi, address
         mov     eax, value
         mov     ecx, count
         rep     stosb

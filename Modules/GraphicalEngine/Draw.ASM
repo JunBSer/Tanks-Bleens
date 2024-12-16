@@ -210,6 +210,7 @@ proc DrawGame uses esi edi ebx
         fld        dword [eax + Tank.hp]
         fcomip     st, st1
         jbe        .Skip
+        stdcall    UpdateTarget, [esi + edi]
         stdcall    DrawTank, [esi + edi]
 .Skip:
         faddp      st,st
