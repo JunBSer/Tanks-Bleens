@@ -292,6 +292,7 @@ proc Collision.SetupModelMatrix uses esi edi ebx,\
         locals
                 newObb          OBB
                 matrixTemp      Matrix4x4
+                targetObb       OBB
         endl
 
         mov     eax, [tank]
@@ -309,7 +310,7 @@ proc Collision.SetupModelMatrix uses esi edi ebx,\
         mov     ebx, [DinObjects]          ; ebx <- array of objects pointer
 
         fld     [DISTANCE_FOR_CHECK_COLLISION]
-.Collision.Loop:
+.Collision.Loop1:
         mov     eax, ecx                ; index of object
         dec     eax
         shl     eax, 2                  ; offset of object in byte
@@ -322,24 +323,58 @@ proc Collision.SetupModelMatrix uses esi edi ebx,\
         fld     dword [esp]
         add     esp, 4
         fcomip  st0, st1
-        ja      .SkipCheck
+        ja      .SkipCheck1
 
         push    ecx
         stdcall Collision.Check, edi, [edx + Object.pOBB]
         pop     ecx
         cmp     eax, 1
         je      .Return1
-.SkipCheck:
-        loop    .Collision.Loop
+.SkipCheck1:
+        loop    .Collision.Loop1
 
-        ;stdcall Collision.OBB.Copy, [esi + Object.pOBB], edi
+        mov     ecx, [TargetCnt]
+        mov     ebx, [Targets]
+.Collision.Loop2:
+        mov     eax, ecx                ; index of tank
+        dec     eax
+        shl     eax, 2                  ; offset of tank in byte
+        mov     edx, [ebx + eax]
+
+        cmp     dword [edx + Tank.hp], 0
+        jle     .SkipCheck2
+        push    ecx edx
+        push    dword [edx + Tank.pModelMatrix] ; Collision.OBB.Update <- 2nd arg
+        mov     edx, [edx + Tank.pBodyObj]
+        push    [edx + Object.pOBB]  ; Collision.OBB.Copy <- 2nd arg
+        lea     edx, [targetObb]
+        stdcall Collision.OBB.Copy, edx ; [edx + Object.pOBB]
+        lea     edx, [targetObb]
+        stdcall Collision.OBB.Update, edx ;[edx + Tank.pModelMatrix]
+        lea     edx, [targetObb + OBB.c]
+        stdcall Vector3.Distance, edi, edx
+        pop     edx ecx
+        push    eax
+        fld     dword [esp]
+        add     esp, 4
+        fcomip  st0, st1
+        ja      .SkipCheck2
+
+        push    ecx
+        lea     ecx, [targetObb]
+        stdcall Collision.Check, edi, ecx
+        pop     ecx
+        cmp     eax, 1
+        je      .Return1
+.SkipCheck2:
+        loop    .Collision.Loop2
+
         lea     ebx, [matrixTemp]
         mov     eax, [tank]
         stdcall Matrix.Copy, [eax + Tank.pModelMatrix], ebx
         xor     eax, eax
         jmp     .Return
 .Return1:
-        ;stdcall Matrix.LoadIdentity, [matrix]
         mov      eax, 1
 .Return:
         fstp    st0
