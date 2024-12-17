@@ -51,6 +51,7 @@ proc WindowProc,\
 
 .Paint:
         stdcall DrawGame
+        ;stdcall DrawStartMenu
         jmp     .ReturnZero
 
 .KeyDown:
@@ -59,7 +60,7 @@ proc WindowProc,\
         jmp     .ReturnZero
 
 .Destroy:
-       stdcall  ReleaseGraphicsResources
+      ; stdcall  ReleaseGraphicsResources
        invoke  ExitProcess, ebx
 .ReturnZero:
 

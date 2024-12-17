@@ -5,8 +5,8 @@
         include         "../Data/Mesh.inc"
         include         "../Data/Tank.inc"
         include         "../LogicalEngine/BBoxes.asm"
-        include         "../GraphicalEngine/Matrix.asm"
-        include         "../GraphicalEngine/Mesh.asm"
+        include         "../GraphicalEngine/DrawGame/Matrix.asm"
+        include         "../GraphicalEngine/DrawGame/Mesh.asm"
         include         "../Data/Object.inc"
         include         "../Data/GameParams.inc"
         include         "../LogicalEngine/Tank.asm"
@@ -50,11 +50,11 @@ proc Init uses esi
 
         stdcall Glext.InitShaders, std_program, std_fragmentShader, std_frShaderFilePath, std_vertexShader, std_vrtxShaderFilePath
 
-       ; stdcall Glext.InitShaders, stat_program, stat_fragmentShader, stat_frShaderFilePath, stat_vertexShader, stat_vrtxShaderFilePath
+        ;stdcall Glext.InitShaders, stat_program, stat_fragmentShader, stat_frShaderFilePath, stat_vertexShader, stat_vrtxShaderFilePath
 
         stdcall InitDrawGame
 
-        stdcall InitUIElemMtrx
+        ;stdcall InitDrawUI
 
         ret
 endp
