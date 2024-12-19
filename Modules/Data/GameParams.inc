@@ -10,6 +10,7 @@ VK_LBUTTON              =                       0x01
 gameState               dd                      0
 
 fShoot                  dd                      false
+fFocus                  dd                      true
 
 stdDamage                =                      30
 
@@ -18,3 +19,4 @@ keyState                dd                      0
 lastDrawTime            dd                      0
 
 mouseSpeed              GLfloat                 0.03
+

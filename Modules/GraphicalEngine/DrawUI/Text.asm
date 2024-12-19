@@ -11,6 +11,8 @@ proc CreateText uses edi esi ebx,\
          textObj        dd      ?
      endl
 
+     xor        ebx, ebx
+
      len        [pString]
      mov        [strLen], ecx
 
@@ -31,7 +33,7 @@ proc CreateText uses edi esi ebx,\
      mov        edi, [vertices]
      mov        ebx, [textCoords]
 
-     mov        edx, -5.0
+     mov        edx, 0.0
      mov        esi, 0
      mov        ecx, [strLen]
 .FillCoordsLoop:
@@ -100,7 +102,10 @@ proc CreateText uses edi esi ebx,\
      mov        [textObj], eax
 
      mov        edi, eax
-     stdcall    Matrix.LoadIdentity, [edi + StaticObject.pModelMatrix]
+     stdcall    Matrix.LoadIdentity, matrixM
+
+     stdcall    Matrix.Scale, matrixS, [resolutScale]
+     stdcall    Matrix.Multiply, matrixS, matrixM, [edi + StaticObject.pModelMatrix]
 
      mov        eax, edi
     ret

@@ -1,8 +1,8 @@
 proc Player.Move uses ebx edi esi
-
+        cmp      [fFocus],true
+        jne      .Return
         stdcall MoveCamera, [mainCamera], [tank]
         stdcall MoveTank,   [tank], [mainCamera]
-
         stdcall Player.Shoot, [tank], fShoot, [Targets], [TargetCnt], [DinObjects], [DinObjCnt]
 .Return:
         ret

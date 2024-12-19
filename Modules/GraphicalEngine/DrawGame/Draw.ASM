@@ -26,11 +26,6 @@
 
         tank                     dd              ?
 
-        StatObjects              dd              ?
-        StatObjCnt               dd              ?
-        StatObjCap               dd              ?
-
-
         Targets                  dd              ?
         TargetCnt                dd              ?
         TargetCap                dd              ?
@@ -46,21 +41,6 @@ proc InitDrawGame  uses edi
 
 ;GetUniforms for std shader program
      stdcall    InitStdProgUniforms, [std_program]
-
-
-;Init textures
-     stdcall    InitTexture, mainTxtFilePath
-     mov        [mainTextID], eax
-
-     stdcall    InitTexture, tankTxtFilePath
-     mov        [tankTextID], eax
-
-     stdcall    InitTexture, crosshairFilePath
-     mov        [crossTextID],eax
-
-     stdcall    InitTexture, shootFilePath
-     mov        [shootTextID],eax
-
 ;Init objArr
      mov         eax, 4
      mov         [DinObjCap],eax
@@ -116,7 +96,7 @@ proc InitDrawGame  uses edi
      stdcall CreateStaticObject, vert, text, normals, [crossTextID], [vertCnt]
      mov     [crosshair], eax
 
-     ;Init shoot animation
+;Init shoot animation
      stdcall CreateStaticObject, vert, text, normals, [shootTextID], [vertCnt]
      mov     [shootAnimObj], eax
 
@@ -300,16 +280,12 @@ proc InitGameDrawParams uses ebx,\
      fstp    dword[ebx]
 
      xor     ebx, ebx
+
      invoke  ShowCursor, ebx
-     mov     eax, [clientRect.right]
-     sar     eax, 1
-     mov     [windowWidthH], eax
-     mov     eax, [clientRect.bottom]
-     sar     eax, 1
-     mov     [windowHeightH], eax
-     xor     eax, eax
      invoke  SetCursorPos, [windowWidthH], [windowHeightH]
 
+
+     invoke  glEnable, GL_DEPTH_TEST
     ret
 endp
 
