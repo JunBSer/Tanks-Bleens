@@ -121,10 +121,10 @@ proc    MoveTank uses esi edi ebx,\
         lea     eax, [edi + Tank.position]
         stdcall Vector3.Copy, eax, esi
 
-        mov     edi, [camera]
-        lea     esi, [turnModel]
-        lea     edi, [edi + Camera.rotations]
-        stdcall Vector3.Sub, edi, esi
+        ;mov     edi, [camera]
+        ;lea     esi, [turnModel]
+        ;lea     edi, [edi + Camera.rotations]
+        ;stdcall Vector3.Sub, edi, esi
 
         mov     edi, [pTank]
         lea     eax, [edi + Tank.rotations]
