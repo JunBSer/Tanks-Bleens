@@ -13,6 +13,7 @@
         include         "../Camera/Camera.asm"
         include         "../LogicalEngine/Shooting.asm"
         include         "../GraphicalEngine/DrawUI/ElementHandlers.asm"
+        include         "../GraphicalEngine/DrawUI/Button.inc"
         include         "../GraphicalEngine/DrawUI/UIActions.asm"
 
 
@@ -53,8 +54,6 @@ proc Init uses esi
 
         stdcall Glext.LoadFunctions
 
-        ;stdcall Glext.InitShaders, std_program, std_fragmentShader, std_frShaderFilePath, std_vertexShader, std_vrtxShaderFilePath
-
         stdcall Glext.InitShaders, stat_program, stat_fragmentShader, stat_frShaderFilePath, stat_vertexShader, stat_vrtxShaderFilePath
 
         stdcall InitResolutionParams
@@ -63,7 +62,7 @@ proc Init uses esi
         stdcall InitDrawParams
         stdcall InitTextures
 
-        ;stdcall InitDrawGame
+
         stdcall InitDrawUI
 
         ret

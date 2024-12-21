@@ -43,16 +43,17 @@ proc WindowProc,\
 .LeftMButtonDown:
 
         switch  [appState]
-        case    .GameProcess,           1
         case    .MenuClickProcess,      0
+        case    .GameProcess,           1
+
 
 .GameProcess:
         mov     dword [fShoot],       true
         jmp     .DefaultProcessing
 
 .MenuClickProcess:
-        stdcall    ProcessClick, [Buttons], [ButtonsCnt], 0
-        jmp     .DefaultProcessing
+        stdcall   ProcessClick, [Buttons], [ButtonsCnt], [lParam]
+        jmp      .DefaultProcessing
 .DefaultProcessing:
         invoke  DefWindowProc, [hWnd], [uMsg], [wParam], [lParam]
         jmp     .Return
@@ -67,21 +68,34 @@ proc WindowProc,\
         jmp     .ReturnZero
 
 .Paint:
-        ;stdcall DrawGame
-        stdcall DrawStartMenu
+        switch  [appState]
+        case    .DrawGame,      1
+        case    .DrawMenu,      0
+
+.DrawMenu:
+        stdcall DrawMenu
+        jmp     .ReturnZero
+.DrawGame:
+        stdcall DrawGame
         jmp     .ReturnZero
 
 .KeyDown:
         cmp     [wParam], VK_ESCAPE
-        je      .Destroy
+        jne     .ReturnZero
+
+        switch  [appState]
+        case    .RetToGameMenu,      1
+
         jmp     .ReturnZero
 
+.RetToGameMenu:
+        stdcall  InitDrawGameMenu
+        jmp     .ReturnZero
 .Destroy:
-      ; stdcall  ReleaseGraphicsResources
-       invoke  ExitProcess, ebx
-.ReturnZero:
+         invoke  ExitProcess, ebx
 
-       xor     eax, eax
+.ReturnZero:
+         xor     eax, eax
 .Return:
 
         ret

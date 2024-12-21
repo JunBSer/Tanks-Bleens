@@ -17,7 +17,6 @@ proc   FindBorderCoords uses esi edi,\
        pop      edi
        pop      esi
 
-
        mov      eax, [esi + 12 + Vector2.u]
        mov      ecx, [esi + 12 + Vector2.v]
        mov      [temp], eax
@@ -36,6 +35,17 @@ proc   FindBorderCoords uses esi edi,\
        pop      edi
        pop      esi
 
+
+       ;mov      esi, [pMaxCoords]
+       ;fld      dword [esi]
+       ;mov      dword [temp], defBorderWidth
+       ;fsub    dword [temp]
+       ;fstp     dword [esi]
+
+       ;fld      dword  [esi + 4]
+       ;mov      dword [temp], defBorderHeight
+       ;fsub    dword [temp]
+       ;fstp     dword [esi + 4]
        ret
 endp
 
@@ -48,14 +58,16 @@ proc   ProcessClick uses esi edi,\
                posY     dd      ?
        endl
 
+
        movzx    eax, word [lParam]
+       sub      eax, [windowWidthH]
        mov      dword [posX], eax
 
-       movzx    eax, word [lParam + 2]
-       mov      dword [posY], eax
 
-       ;mov      dword [posX], 100
-       ;mov      dword [posY], 500
+       movzx    eax, word [lParam + 2]
+       sub      eax, [windowHeightH]
+       neg      eax
+       mov      dword [posY], eax
 
        mov      ecx, [stObjectsCnt]
        mov      edi, [pStObjects]
@@ -77,14 +89,14 @@ proc   ProcessClick uses esi edi,\
 
        stdcall  dword [eax + 20], [esi + edi]
 
-
+       jmp      .Return
 .Skip:
        pop      ecx
 
        loop     .CheckClickLoop
 
 
-
+.Return:
        ret
 endp
 

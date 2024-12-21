@@ -93,6 +93,26 @@ proc CreateMesh uses esi edi ebx,\
      ret
 endp
 
+proc ReleaseMeshRes uses esi,\
+     pMesh
+
+     mov        esi, [pMesh]
+
+     lea        eax, [esi + Mesh.VBOvert]
+     invoke     glDeleteBuffers, 1, eax
+     lea        eax, [esi + Mesh.VBOnorm]
+     invoke     glDeleteBuffers, 1, eax
+     lea        eax, [esi + Mesh.VBOtex]
+     invoke     glDeleteBuffers, 1, eax
+
+     lea        eax, [esi + Mesh.VAO]
+     invoke     glDeleteVertexArrays, 1, eax
+
+     free       esi
+
+     ret
+endp
+
 
 proc CreateObject uses esi edi,\
      pMesh, pAABB, pOBB
@@ -121,6 +141,48 @@ proc CreateObject uses esi edi,\
 
      mov        eax, esi
     ret
+endp
+
+proc ReleaseObjRes uses esi,\
+     pObj
+
+     mov        esi, [pObj]
+     stdcall    ReleaseMeshRes, [esi + Object.pMesh]
+
+     stdcall    ReleaseAABBRes, [esi + Object.pAABB]
+
+     stdcall    ReleaseOBBRes, [esi + Object.pOBB]
+
+     free       esi
+
+     ret
+endp
+
+
+proc ReleaseObjects uses esi edi ebx,\
+     Objects, pObjCnt
+
+       mov     ebx, [pObjCnt]
+       mov     ecx, [ebx]
+       mov     edi, [Objects]
+
+
+.FreeObjLoop:
+       mov        esi, [ebx]
+       sub        esi, ecx
+       shl        esi,2
+
+       push       ecx
+
+
+       stdcall    ReleaseObjRes, [edi + esi]
+
+       pop     ecx
+
+       loop    .FreeObjLoop
+
+       mov      dword [ebx], 0
+     ret
 endp
 
 

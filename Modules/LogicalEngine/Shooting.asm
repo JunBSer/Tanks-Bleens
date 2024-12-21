@@ -322,7 +322,7 @@ proc Player.Shoot uses esi edi ebx,\
 .EndProcessing:
      mov        edi, [pfShoot]
      mov        dword[edi], false
-     mov        dword [shootAnimTime], 150
+     mov        dword [shootAnimTime], 100
 .Return:
 
 

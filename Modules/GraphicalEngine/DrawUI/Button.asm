@@ -1,4 +1,3 @@
-     include         "./Button.inc"
 proc CreateButton uses edi esi ebx,\
      pText, butTextId, txtTextId, eHandler
      locals
@@ -136,21 +135,14 @@ proc CreateButton uses edi esi ebx,\
 endp
 
 
-proc SetButtonParams uses esi edi,\
+proc SetButtonParams uses edi,\
      obj, scale, translation
 
       mov     edi, [obj]
-      mov     esi, [edi + Button.pEntityObj]
 
-      stdcall Matrix.Scale, matrixS, [scale]
-      stdcall Matrix.Translate, matrixT, [translation]
+      stdcall SetStObjParams, [edi + Button.pEntityObj], [scale], [translation]
 
-      stdcall Matrix.Copy, matrixM, [esi + StaticObject.pModelMatrix]
-
-      stdcall Matrix.Multiply, matrixS, matrixT, matrixR
-      stdcall Matrix.Multiply, matrixR, matrixM, [esi + StaticObject.pModelMatrix]
-
-      stdcall SetTxtParams,[edi + Button.pTextObj], [scale], [translation]
+      stdcall SetStObjParams, [edi + Button.pTextObj], [scale], [translation]
 
     ret
 endp
@@ -167,4 +159,45 @@ proc DrawButton uses edi,\
      stdcall    DrawStaticObject, [edi + Button.pTextObj], [stModelMatrixLocation], [stSamplerLocation]
 
     ret
+endp
+
+
+proc ReleaseButtonRes uses esi,\
+     pBtn
+
+     mov        esi, [pBtn]
+
+     stdcall ReleaseStObjRes, [esi + Button.pEntityObj]
+     stdcall ReleaseStObjRes, [esi + Button.pTextObj]
+
+     free    esi
+
+     ret
+endp
+
+
+proc ReleaseButtons uses esi edi ebx,\
+     Buttons, pButtonsCnt
+
+       mov     ebx, [pButtonsCnt]
+       mov     ecx, [ebx]
+       mov     edi, [Buttons]
+
+
+.FreeButtonLoop:
+       mov        esi, [ebx]
+       sub        esi, ecx
+       shl        esi,2
+
+       push       ecx
+
+
+       stdcall    ReleaseButtonRes, [edi + esi]
+
+       pop     ecx
+
+       loop    .FreeButtonLoop
+
+       mov      dword [ebx], 0
+     ret
 endp

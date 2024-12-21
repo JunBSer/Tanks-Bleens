@@ -37,8 +37,6 @@ proc InitDrawGame  uses edi
           aspect          dd              ?
      endl
 
-     mov        [appState], 1
-
 ;GetUniforms for std shader program
      stdcall    InitStdProgUniforms, [std_program]
 ;Init objArr
@@ -226,45 +224,18 @@ proc    ReleaseGraphicsResources uses esi edi
         invoke     glBindBuffer, GL_ARRAY_BUFFER,0
         invoke     glUseProgram, ebx
 
+        stdcall    ReleaseStObj, [StatObjects], StatObjCnt
+        free       [StatObjects]
 
-        mov     ecx, [DinObjCnt]
-        mov     esi, [DinObjects]
+        stdcall    ReleaseButtons, [Buttons], ButtonsCnt
+        free       [Buttons]
 
-.LoopFree:
-        push    ecx
-        mov     edx, [DinObjCnt]
-        sub     edx, ecx
+        invoke     glDeleteTextures, 8, mainTextID
+        free       [mainCamera]
 
-        push    edx
-
-        mov     edi, [esi+edx*4]
-
-        free    [edi+Object.pAABB]
-        free    [edi+Object.pOBB]
-
-        mov     edi, [edi+Object.pMesh]
-
-        lea     eax, [edi+Mesh.VAO]
-        invoke  glDeleteVertexArrays, 1, eax
-
-        lea     eax, [edi+Mesh.VBOvert]
-        invoke  glDeleteBuffers, 1, eax
-
-        lea     eax, [edi+Mesh.VBOnorm]
-        invoke  glDeleteBuffers, 1, eax
-
-        lea     eax, [edi+Mesh.VBOtex]
-        invoke  glDeleteBuffers, 1, eax
-
-        free    edi
-
-        pop     edx
-
-        pop     ecx
-        loop    .LoopFree
-
-        invoke  glDeleteTextures, 2, mainTextID
-        free    [mainCamera]
+        invoke     glDeleteShader, [stat_fragmentShader]
+        invoke     glDeleteShader, [stat_vertexShader]
+        invoke     glDeleteProgram,[stat_program]
     ret
 endp
 

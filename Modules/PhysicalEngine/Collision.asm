@@ -345,3 +345,12 @@ proc Collision.SetupModelMatrix uses esi edi ebx,\
         fstp    st0
         ret
 endp
+
+
+proc ReleaseOBBRes uses esi,\
+     pOBB
+
+     mov        esi, [pOBB]
+     free       esi
+     ret
+endp

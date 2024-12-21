@@ -1,16 +1,22 @@
         include         "../../Data/LoadTextures.asm"
 
-        mainTxtFilePath             db     "Resources/mainTextTry.bmp",0
-        tankTxtFilePath             db     "Resources/textureTry.bmp", 0
-        crosshairFilePath           db     "Resources/crosshair.bmp", 0
-        shootFilePath               db     "Resources/shoot.bmp", 0
-        alphabetFilePath            db     "Resources/alphabet.bmp", 0
+        mainTxtFilePath             db     "Resources/Textures/mainTextTry.bmp",0
+        tankTxtFilePath             db     "Resources/Textures/textureTry.bmp", 0
+        crosshairFilePath           db     "Resources/Textures/crosshair.bmp", 0
+        shootFilePath               db     "Resources/Textures/shoot.bmp", 0
+        alphabetFilePath            db     "Resources/Textures/alphabet.bmp", 0
+        mainMenuFilePath            db     "Resources/Textures/MainMenu.bmp", 0
+        subMenuFilePath             db     "Resources/Textures/SubMenu.bmp", 0
+        buttonFilePath              db     "Resources/Textures/Button.bmp", 0
 
         mainTextID               GLuint          0
         tankTextID               GLuint          0
         crossTextID              GLuint          0
         shootTextID              GLuint          0
         alphtTextID              GLuint          0
+        mMenuTextID              GLuint          0
+        sMenuTextID              GLuint          0
+        btnTextID                GLuint          0
 
 proc    LinkTexture uses edi,\
         pTextureData, imgSizes

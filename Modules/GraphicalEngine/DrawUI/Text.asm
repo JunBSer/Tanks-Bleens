@@ -111,22 +111,6 @@ proc CreateText uses edi esi ebx,\
     ret
 endp
 
-proc    SetTxtParams uses edi,\
-        pTextObj, scale, translation
-
-        mov     edi, [pTextObj]
-
-        stdcall Matrix.Scale, matrixS, [scale]
-        stdcall Matrix.Translate, matrixT, [translation]
-
-        stdcall Matrix.Copy, matrixM, [edi + StaticObject.pModelMatrix]
-
-        stdcall Matrix.Multiply, matrixS, matrixT, matrixR
-        stdcall Matrix.Multiply, matrixR, matrixM, [edi + StaticObject.pModelMatrix]
-
-        ret
-endp
-
 proc InitCharData uses edi,\
      letter, pTextArr
 
