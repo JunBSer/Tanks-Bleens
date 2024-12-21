@@ -31,6 +31,48 @@ proc    CreateTank uses esi\
     ret
 endp
 
+proc    ReleaseTankRes uses esi,\
+        pTank
+
+        mov     esi, [pTank]
+        stdcall ReleaseObjRes, [esi + Tank.pBodyObj]
+        stdcall ReleaseObjRes, [esi + Tank.pTurretObj]
+        free    [esi + Tank.pModelMatrix]
+
+        free    esi
+        ret
+endp
+
+
+proc ReleaseTanks uses esi edi ebx,\
+     Targets, pTrgtCnt
+
+       mov     ebx, [pTrgtCnt]
+       mov     ecx, [ebx]
+       mov     edi, [Targets]
+
+
+.FreeTankLoop:
+       mov        esi, [ebx]
+       sub        esi, ecx
+       shl        esi,2
+
+       push       ecx
+
+
+       stdcall    ReleaseTankRes, [edi + esi]
+
+       pop     ecx
+
+       loop    .FreeTankLoop
+
+       mov      dword [ebx], 0
+
+     ret
+endp
+
+
+
 proc    SpawnTank uses esi edi,\
         pTank, position, rotations, scale, speed
 

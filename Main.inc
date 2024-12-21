@@ -35,8 +35,8 @@
         include         "Modules/PhysicalEngine/Collision.asm"
 
         
-        include         "Modules/GraphicalEngine/Draw.asm"
-        
+        include         "Modules/GraphicalEngine/DrawGame/Draw.asm"
+        include         "Modules/GraphicalEngine/DrawUI/Draw.asm"
 
 data import
 

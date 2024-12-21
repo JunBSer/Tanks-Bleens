@@ -128,5 +128,11 @@ proc    FindAABBStatic uses esi edi,\
      ret
 endp
 
+proc    ReleaseAABBRes uses esi,\
+        pAABB
 
+        mov     esi, [pAABB]
+        free    esi
+        ret
+endp
 
