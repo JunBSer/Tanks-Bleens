@@ -29,15 +29,28 @@ proc WindowProc,\
         xor     ebx,ebx
 
         switch  [uMsg]
-        case    .Paint,         WM_PAINT
-        case    .Destroy,       WM_DESTROY
-        case    .KeyDown,       WM_KEYDOWN
+        case    .Paint,                 WM_PAINT
+        case    .Destroy,               WM_DESTROY
+        case    .KeyDown,               WM_KEYDOWN
+        case    .LeftMButtonDown,       WM_LBUTTONDOWN
 
+        jmp     .DefaultProcessing
+
+.LeftMButtonDown:
+
+        switch  [appState]
+        case    .GameProcess,           1
+
+.GameProcess:
+
+        mov     dword [fShoot],       true
+
+.DefaultProcessing:
         invoke  DefWindowProc, [hWnd], [uMsg], [wParam], [lParam]
         jmp     .Return
 
 .Paint:
-        stdcall Draw
+        stdcall DrawGame
         jmp     .ReturnZero
 
 .KeyDown:

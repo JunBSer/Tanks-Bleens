@@ -11,8 +11,10 @@ proc CreateMesh uses esi edi ebx,\
      ;invoke     glGetIntegerv, GL_VERTEX_ARRAY_BINDING, currVao              ;TODO return current context (in future)
      ;invoke     glGetIntegerv, GL_ARRAY_BUFFER_BINDING, currVbo
 
+
      malloc     sizeof.Mesh
      mov        [pMesh],eax
+
      mov        esi,[pMesh]
 
      mov        ecx,[vertexCnt]
@@ -38,14 +40,6 @@ proc CreateMesh uses esi edi ebx,\
      invoke     glVertexAttribPointer, 0, 3, GL_FLOAT, GL_FALSE,0,0
      invoke     glEnableVertexAttribArray, 0
 
-     lea        edi, [esi+Mesh.VBOnorm]
-     invoke     glGenBuffers, 1, edi
-     invoke     glBindBuffer, GL_ARRAY_BUFFER, [edi]
-     invoke     glBufferData, GL_ARRAY_BUFFER,  [byteCnt], [normals], GL_STATIC_DRAW
-
-     invoke     glVertexAttribPointer, 1, 3, GL_FLOAT, GL_FALSE,0,0
-     invoke     glEnableVertexAttribArray, 1
-
      lea         edi, [esi+Mesh.VBOtex]
      invoke      glGenBuffers, 1, edi
      invoke      glBindBuffer, GL_ARRAY_BUFFER, [edi]
@@ -55,11 +49,24 @@ proc CreateMesh uses esi edi ebx,\
      mul         ecx
      invoke      glBufferData, GL_ARRAY_BUFFER,  eax, [textCoords], GL_STATIC_DRAW
 
+     invoke     glVertexAttribPointer, 1, 2, GL_FLOAT, GL_FALSE,0,0
+     invoke     glEnableVertexAttribArray, 1
 
+     cmp        [normals], ebx
+     jne         .FillNormals
+     mov        [esi+Mesh.VBOnorm], 0
+     jmp        .Skip
 
-     invoke     glVertexAttribPointer, 2, 2, GL_FLOAT, GL_FALSE,0,0
+.FillNormals:
+     lea        edi, [esi+Mesh.VBOnorm]
+     invoke     glGenBuffers, 1, edi
+     invoke     glBindBuffer, GL_ARRAY_BUFFER, [edi]
+     invoke     glBufferData, GL_ARRAY_BUFFER,  [byteCnt], [normals], GL_STATIC_DRAW
+
+     invoke     glVertexAttribPointer, 2, 3, GL_FLOAT, GL_FALSE,0,0
      invoke     glEnableVertexAttribArray, 2
 
+.Skip:
      invoke     glBindBuffer, GL_ARRAY_BUFFER,0    ;[currVbo]
 
      invoke     glBindVertexArray,0                ; [currVao]
@@ -101,48 +108,54 @@ endp
 
 
 proc AddToObjects uses esi edi ebx,\
-           pObject
+           pObject, pObjectsArr, pObjCap, pObjCnt
 
      locals
           tempObjects   dd      ?
      endl
 
+     mov        esi, [pObjCap]
+     mov        eax,[esi]
 
-     mov        eax,[objCap]
-     cmp        [objCnt],eax
+     mov        edi, [pObjCnt]
+     cmp        [edi],eax
      jne        .Skip
 
-     shl        [objCap],1
+     shl        dword [esi],1
 
      shl        eax,3
-
 
      malloc     eax
      mov        [tempObjects],eax
 
-     mov        eax,[objCnt]
+     mov        eax,[edi]
      shl        eax,2
 
-     memcpy     [tempObjects], [Objects], eax
+     mov        ebx, [pObjectsArr]
+     memcpy     [tempObjects], [ebx], eax
 
-     mov        edx, [Objects] ;save old obj
+     mov        edx, [ebx] ;save old obj
 
      xchg       eax, [tempObjects]
-     mov        [Objects],eax                                            ; 0 1 2 3 4 5 6 7 8 9
+     mov        [ebx],eax                                            ; 0 1 2 3 4 5 6 7 8 9
 
      ;xor        ebx, ebx
      free       edx
 
 .Skip:
-     mov        edi, [Objects]
-     mov        ebx, [objCnt]
-     shl        ebx,2
+
+     mov        edi, [pObjectsArr]
+     mov        edi, [edi]
+
+     mov        ebx, [pObjCnt]
+     mov        esi, [ebx]
+     shl        esi,2
 
      mov        eax, [pObject]
 
-     mov        [edi+ebx],eax
+     mov        [edi+esi],eax
 
-     add        [objCnt],1
+     add        dword[ebx],1
      ret
 endp
 

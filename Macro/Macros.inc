@@ -11,7 +11,7 @@ macro case label, [value]
 
 macro memset address, value, count
 {
-        mov     edi, adress
+        mov     edi, address
         mov     eax, value
         mov     ecx, count
         rep     stosb
@@ -48,4 +48,44 @@ macro len strAddr
         repne   scasb
         sub     ecx,255
         neg     ecx
+}
+
+macro minf firstVal, secondVal, Res
+{
+        local   ..Return
+        fld     dword [firstVal]
+        fld     dword [secondVal]
+        fcomi   st, st1
+        jb      @f
+
+        fstp    dword [secondVal]
+
+        jmp     ..Return
+
+@@:    
+        fxch
+        fstp    dword [firstVal]
+        
+..Return:
+        fstp    dword [Res]
+}
+
+macro maxf firstVal, secondVal, Res
+{
+        local   ..Return
+        fld     dword [firstVal]      
+        fld     dword [secondVal]     
+        fcomi   st, st1
+        jb      @f
+
+        fxch
+        fstp    dword [firstVal]
+
+        jmp     ..Return
+
+@@:    
+        fstp    dword [secondVal]
+        
+..Return:
+        fstp    dword [Res]
 }

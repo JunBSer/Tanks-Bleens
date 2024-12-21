@@ -2,8 +2,6 @@
         tankBModelPath   db      "Resources/Tank/tankBody.obj", 0
         tankTModelPath   db      "Resources/Tank/tankTurret.obj", 0
 
-
-
 proc    CreateTank uses esi\
 
         locals
@@ -17,13 +15,16 @@ proc    CreateTank uses esi\
 
 ;Create Body object
         stdcall    ReadObject, tankBModelPath, [tankTextID]
-        mov        [esi+Tank.pBodyObj], eax
+        mov        [esi + Tank.pBodyObj], eax
 ;Create Turret object
         stdcall    ReadObject, tankTModelPath, [tankTextID]
-        mov        [esi+Tank.pTurretObj], eax
+        mov        [esi + Tank.pTurretObj], eax
 
         malloc     sizeof.Matrix4x4
-        mov        [esi+Tank.pModelMatrix],eax
+        mov        [esi + Tank.pModelMatrix],eax
+
+        malloc     sizeof.Matrix4x4
+        mov        [esi + Tank.turret + Turret.pTurretMatrix],eax
 
         mov        eax, esi
 
@@ -54,7 +55,8 @@ proc    SpawnTank uses esi edi,\
         ;Init turret rotations
         lea     eax, [esi + Tank.turret]
         lea     eax, [eax + Turret.rotations]
-        stdcall Vector3.Copy, eax, [rotations]
+
+        memset  eax, 0.0, sizeof.Vector3
 
         ; Init Model matrix
         stdcall Matrix.Scale, matrixS, [scale]
@@ -67,116 +69,98 @@ proc    SpawnTank uses esi edi,\
 
         stdcall Matrix.Multiply, matrixS, matrixM, [esi + Tank.pModelMatrix]
 
+        stdcall Matrix.Copy, [esi + Tank.turret + Turret.pTurretMatrix], [esi + Tank.pModelMatrix]
+
         stdcall Collision.OBB.Setup, esi
 
        ; stdcall Camera.Init, [rotations], [position], stdOffset, [mainCamera]
 
+        mov     [esi  + Tank.hp], 100
     ret
 endp
 
 
-proc   MoveTank uses esi edi ebx,\
-       pTank, camera
+proc    MoveTank uses esi edi ebx,\
+        pTank, camera
 
-       locals
-                tempTarget              Vector3         0.0, 0.0, 0.0
+
+        locals
                 turnModel               Vector3         0.0, 0.0, 0.0
                 displacement            Vector3         0.0, 0.0, 0.0
                 modelDirection          Vector3         0.0, 0.0, 0.0
-       endl
-
-       stdcall Model.KeyState.Update, KeyState
-
-       lea     esi, [turnModel]
-       stdcall Model.CalcTurn, esi, [rotationSpeedModel]
-       mov      edi, [pTank]
-       ;lea      eax, [edi + Tank.rotations]
-       ;stdcall Vector3.Sub, eax, esi
-
-       lea     ebx, [modelDirection]
-       stdcall Camera.CalcDirection, ebx, esi
+                tempTurn                Vector3         0.0, 0.0, 0.0
+        endl
 
 
-       ;mov      edi, [pTank]
+        stdcall Model.KeyState.Update, keyState
 
-       lea      esi, [displacement]
+        lea     esi, [turnModel]
+        stdcall Model.CalcTurn, esi, [rotationSpeedModel]
+        mov     edi, [pTank]
 
-       stdcall  Model.CalcPosition, esi, ebx, [edi + Tank.speed]
+        lea     ebx, [modelDirection]
+        stdcall Camera.CalcDirection, ebx, esi
 
-       stdcall  Matrix.Rotate, matrixR, [turnModel.y], 0.0, 1.0, 0.0
+        lea     esi, [displacement]
 
+        stdcall Model.CalcPosition, esi, ebx, [edi + Tank.speed]
 
-       stdcall  Matrix.Translate, matrixT, esi
-
-       stdcall Matrix.Multiply, matrixT, matrixR, matrixM
-       ;
-       stdcall Collision.SetupModelMatrix, edi, matrixM
-       cmp     eax, 1
-       je      .Return
-       ;
-       ;stdcall Matrix.Multiply, matrixM, [edi + Tank.pModelMatrix], matrixS
-
-       stdcall Matrix.Copy, matrixS, [edi + Tank.pModelMatrix]
+        stdcall Matrix.Rotate, matrixR, [turnModel.y], 0.0, 1.0, 0.0
 
 
-       lea     esi, [matrixS + Matrix4x4.m41]
-       lea     eax, [edi + Tank.position]
-       stdcall Vector3.Copy, eax, esi
+        stdcall Matrix.Translate, matrixT, esi
 
-       mov      edi, [camera]
-       lea      edi, [edi + Camera.position]
-       stdcall  Vector3.Copy, edi, eax
+        stdcall Matrix.Multiply, matrixT, matrixR, matrixM
+        ;
+        stdcall Collision.SetupModelMatrix, edi, matrixM
+        cmp     eax, 1
+        je      .Return
 
-       mov      eax, [stdOffset.y]
-       mov      [tempTarget.y], eax
-       lea      eax, [tempTarget]
+        mov     esi, [edi + Tank.pModelMatrix]
+        lea     esi, [esi + Matrix4x4.m41]
+        lea     eax, [edi + Tank.position]
+        stdcall Vector3.Copy, eax, esi
 
-       stdcall  Vector3.Add, edi, eax
+        ;mov     edi, [camera]
+        ;lea     esi, [turnModel]
+        ;lea     edi, [edi + Camera.rotations]
+        ;stdcall Vector3.Sub, edi, esi
 
-       push    edi
-       mov      edi, [pTank]
-       lea     eax, [edi + Tank.rotations]
-       lea     esi, [turnModel]
-       stdcall Vector3.Sub, eax, esi
-       pop     edi
+        mov     edi, [pTank]
+        lea     eax, [edi + Tank.rotations]
+        lea     esi, [turnModel]
+        stdcall Vector3.Sub, eax, esi
 
-       ;lea      edx, [modelDirection]
-       mov      esi, [pTank]
-       lea      ebx, [esi + Tank.rotations]
-       lea      esi, [tempTarget]
-       stdcall  Vector3.Copy, esi, ebx
-
-       lea     ebx, [modelDirection]
-       stdcall Camera.CalcDirection, ebx, esi
-
-       mov      eax, -2.0
-       stdcall  Vector3.Mul, ebx, eax
-       stdcall  Vector3.Add, edi, ebx
-
-       mov      edi, [camera]
-       lea      esi, [turnModel]
-       lea      edi, [edi + Camera.rotations]
-
-       stdcall  Vector3.Sub, edi,esi
 
 .Return:
-    ret
+        mov     eax, [camera]
+        mov     eax, [eax + Camera.rotations + Vector3.y]
+        mov     dword [tempTurn + Vector3.y], eax
+        lea     eax, [tempTurn]
+        stdcall Turret.Rotate, [edi + Tank.turret + Turret.pTurretMatrix], [pTank], eax
+
+        stdcall ChangeDependPos, [edi + Tank.turret + Turret.pTurretMatrix]
+
+        ret
 endp
 
+
 proc    MoveCamera uses esi edi ebx,\
-        camera
+        camera, pTank
 
         locals
                 direction               Vector3         0.0, 0.0, 0.0
                 up                      Vector3         0.0, 0.0, 0.0
                 right                   Vector3         0.0, 0.0, 0.0
                 tempTarget              Vector3         0.0, 0.0, 0.0
-                worldUp                 Vector3         0.0, 1.0, 0.0
+                tempTurn                Vector3         0.0, 0.0, 0.0
         endl
+
+
 
         mov     edi, [camera]
         lea     ebx, [edi+Camera.rotations]
-        stdcall Camera.ChangeAngles, ebx
+        stdcall Camera.CalcPosition, edi, [pTank]
 
         ;fld     [ebx + Vector3.x]
         ;fldz
