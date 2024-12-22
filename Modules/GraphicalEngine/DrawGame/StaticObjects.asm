@@ -1,5 +1,5 @@
 proc CreateStaticObject uses esi edi,\
-     vertices, textCoords, normals, textureID, vertexCnt
+     vertices, textCoords, normals, textureID, vertexCnt, typeTextVBO, typeVertVBO
 
      locals
          pStaticObject          dd      ?
@@ -7,7 +7,7 @@ proc CreateStaticObject uses esi edi,\
          pModelMatrix           dd      ?
      endl
 
-     stdcall    CreateMesh, [vertices], [normals], [textCoords], [textureID], [vertexCnt]
+     stdcall    CreateMesh, [vertices], [normals], [textCoords], [textureID], [vertexCnt], [typeTextVBO], [typeVertVBO]
      mov        [pMesh], eax
 
      malloc     sizeof.Matrix4x4
@@ -56,7 +56,7 @@ proc DrawStaticObject uses edi esi,\
 
      invoke     glBindTexture, GL_TEXTURE_2D, [edi+Mesh.textureID]
      invoke     glUniform1i, [samplerLoc], 0
-    ; INT 3
+
      invoke     glUniformMatrix4fv, [matrLoc], 1, GL_FALSE, [esi+StaticObject.pModelMatrix]
 
      invoke     glDrawArrays, GL_TRIANGLES, 0, [edi+Mesh.vertexCnt]

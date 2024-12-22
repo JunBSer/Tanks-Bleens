@@ -1,9 +1,11 @@
+
 proc    PlayButtonHandler uses esi,\
         pObj
 
         stdcall  ReleaseButtons, [Buttons], ButtonsCnt
 
         stdcall  InitSubMenuBtns
+
         ret
 endp
 
@@ -25,6 +27,9 @@ proc    OnePlButtonHandler uses esi,\
         stdcall  ReleaseStObj, [StatObjects], StatObjCnt
 
         mov      dword [appState],1
+        mov      dword [playerCnt], 1
+
+        stdcall InitTextures
 
         stdcall Glext.InitShaders, std_program, std_fragmentShader, std_frShaderFilePath, std_vertexShader, std_vrtxShaderFilePath
 
@@ -32,6 +37,29 @@ proc    OnePlButtonHandler uses esi,\
         ret
 endp
 
+proc    TwoPlButtonHandler uses esi,\
+        pObj
+
+        stdcall  ReleaseButtons, [Buttons], ButtonsCnt
+
+
+        mov      dword [playerCnt], 2
+
+        stdcall  InitServerConBtns
+
+        ret
+endp
+
+
+proc    FourPlButtonHandler uses esi,\
+        pObj
+        stdcall  ReleaseButtons, [Buttons], ButtonsCnt
+
+        mov      dword [playerCnt], 4
+
+        stdcall  InitServerConBtns
+        ret
+endp
 
 
 proc    ReturnGameButtonHandler uses esi,\
@@ -57,6 +85,15 @@ proc    ReturnMenuButtonHandler uses esi,\
         ret
 endp
 
+proc    ReturnSelectMButtonHandler uses esi,\
+        pObj
+
+        stdcall  ReleaseButtons, [Buttons], ButtonsCnt
+
+        stdcall  InitSubMenuBtns
+        ret
+endp
+
 
 proc    MenuButtonHandler uses esi,\
         pObj
@@ -77,8 +114,67 @@ proc    MenuButtonHandler uses esi,\
         invoke     glDeleteShader, [std_vertexShader]
         invoke     glDeleteProgram, [std_program]
 
-        stdcall  InitDrawStartMenu
+        stdcall    InitDrawStartMenu
         ret
 endp
 
 
+proc    HostBtnHandler uses esi,\
+        pObj
+;ServPrep:   ...
+
+
+
+        stdcall Glext.InitShaders, std_program, std_fragmentShader, std_frShaderFilePath, std_vertexShader, std_vrtxShaderFilePath
+
+        stdcall InitDrawGame
+
+        ret
+endp
+
+
+proc    UsrBtnHandler uses esi,\
+        pObj
+;ServPrep:   ...
+
+        stdcall  ReleaseStObj, [StatObjects], StatObjCnt
+        stdcall  ReleaseButtons, [Buttons], ButtonsCnt
+        stdcall  InitInputPage
+
+        ;stdcall InitTextures
+        ;stdcall Glext.InitShaders, std_program, std_fragmentShader, std_frShaderFilePath, std_vertexShader, std_vrtxShaderFilePath
+
+        ;stdcall InitDrawGame
+        ret
+endp
+
+
+proc    EditHandler uses esi,\
+        pObj
+
+        mov     dword [isEditActive], true
+        mov     dword [activeEditHandler], ProcessInput
+
+        mov     esi, [edit]
+
+        ret
+endp
+
+proc    ReturnToChooseCon uses esi,\
+        pObj
+
+        stdcall  ReleaseButtons, [Buttons], ButtonsCnt
+        stdcall  ReleaseStObj, [StatObjects], StatObjCnt
+        stdcall  InitChooseConTypeMenu
+        mov      dword [isEditActive], false
+
+        ret
+endp
+
+
+proc    ConnectHandler uses esi,\
+        pObj
+
+
+        ret
+endp

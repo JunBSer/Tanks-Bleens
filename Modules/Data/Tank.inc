@@ -24,4 +24,6 @@ struct Tank
 
 
     hp              dd          ?
+
+    id              dd          ?
 ends

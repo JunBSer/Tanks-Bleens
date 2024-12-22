@@ -8,6 +8,7 @@
         include                  "./TestData.asm"
         include                  "../../LogicalEngine/Crosshair.asm"
         include                  "./StaticObjects.asm"
+        include                  "./HP.asm"
 
 
         lightColor               Vector3         0.6, 0.6, 0.6
@@ -30,6 +31,8 @@
         TargetCnt                dd              ?
         TargetCap                dd              ?
 
+        hpBar                    dd              ?
+        lastHp                   dd              ?
 
 proc InitDrawGame  uses edi
 
@@ -63,7 +66,7 @@ proc InitDrawGame  uses edi
 
      lea     eax, [aspect]
      stdcall InitGameDrawParams, eax
-     stdcall Camera.Init, rotations, positionModel, stdOffset, [mainCamera]
+     stdcall Camera.Init, rotations1, positionModel1, stdOffset, [mainCamera]
 
 ;Init matrices
      stdcall     MapInit
@@ -80,7 +83,7 @@ proc InitDrawGame  uses edi
      stdcall CreateTank
      mov     [tank], eax
 
-     stdcall SpawnTank, eax, positionModel, turnModel, scaleModel, [speed]
+     stdcall SpawnTank, eax, positionModel1, turnModel1, scaleModel, [speed]
 
 ;Add Targets
      stdcall CreateTank
@@ -88,15 +91,20 @@ proc InitDrawGame  uses edi
 
      stdcall AddToObjects, eax, Targets, TargetCap, TargetCnt
 
-     stdcall SpawnTank, edi, positionTarget, turnTarget, scaleTarget, [speed]
+     stdcall SpawnTank, edi, positionModel2, turnModel2, scaleTarget, [speed]
 
 ;Init static objects
-     stdcall CreateStaticObject, vert, text, normals, [crossTextID], [vertCnt]
+     stdcall CreateStaticObject, vert, text, normals, [crossTextID], [vertCnt], GL_STATIC_DRAW, GL_STATIC_DRAW
      mov     [crosshair], eax
 
 ;Init shoot animation
-     stdcall CreateStaticObject, vert, text, normals, [shootTextID], [vertCnt]
+     stdcall CreateStaticObject, vert, text, normals, [shootTextID], [vertCnt], GL_STATIC_DRAW, GL_STATIC_DRAW
      mov     [shootAnimObj], eax
+
+     stdcall  CreateStaticObject, uiVert, text, 0, [hpBarTextID], [vertCnt], GL_STATIC_DRAW, GL_STATIC_DRAW
+     mov      [hpBar], eax
+
+     stdcall  InitHPBar, [hpBar]
 
         ret
 endp
@@ -206,7 +214,14 @@ proc DrawGame uses esi edi ebx
 ;Draw static objects
         invoke  glDisable, GL_DEPTH_TEST
         stdcall DrawStaticObject, [crosshair], [modelMatrixLocation], [samplerLocation]
-        invoke  glEnable, GL_DEPTH_TEST
+
+
+        invoke     glUseProgram, [stat_program]
+        invoke     glUniformMatrix4fv,[stProjMatrixLocation],1, GL_FALSE, matrixPrStat
+
+        stdcall    DrawStaticObject, [hpBar], [stModelMatrixLocation], [stSamplerLocation]
+
+        invoke     glEnable, GL_DEPTH_TEST
 
 
 .Return:

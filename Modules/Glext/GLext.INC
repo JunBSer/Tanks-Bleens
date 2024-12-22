@@ -29,6 +29,7 @@ extensionAddresses:
         glUniform3fv                    dd      ?
         glDeleteVertexArrays            dd      ?
         glDeleteBuffers                 dd      ?
+        glBufferSubData                 dd      ?
 
 extensionNames:
         db      "glUseProgram", 0
@@ -61,6 +62,7 @@ extensionNames:
         db      "glUniform3fv", 0
         db      "glDeleteVertexArrays", 0
         db      "glDeleteBuffers", 0 
+        db      "glBufferSubData", 0
         db      0
 
 define GL_FRAGMENT_SHADER                0x8B30
@@ -70,6 +72,7 @@ define GL_LINK_STATUS                    0x8B82
 define GL_ARRAY_BUFFER                   0x8892
 define GL_ELEMENT_ARRAY_BUFFER           0x8893
 define GL_STATIC_DRAW                    0x88E4
+define GL_DYNAMIC_DRAW                   0x88E8
 define GL_VERTEX_ARRAY_BINDING           0x8074
 define GL_ARRAY_BUFFER_BINDING           0x8894 
 define GL_TEXTURE0                       0x8400

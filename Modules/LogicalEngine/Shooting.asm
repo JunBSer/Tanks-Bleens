@@ -229,6 +229,8 @@ proc Player.Shoot uses esi edi ebx,\
      shl        esi,2
 
      mov        eax, [edi + esi]
+     cmp        dword [eax + Tank.hp], 0
+     jl         .SkipTargetInters
      mov        eax, [eax + Tank.pBodyObj]
      stdcall    Collision.OBB.Copy, ebx, [eax + Object.pOBB]
 

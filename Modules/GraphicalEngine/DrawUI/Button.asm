@@ -117,11 +117,11 @@ proc CreateButton uses edi esi ebx,\
      mov        dword [esi + 44], 0.0
 
 
-     stdcall    CreateStaticObject, [vertices], [textCoords], 0, [butTextId], 6
+     stdcall    CreateStaticObject, [vertices], [textCoords], 0, [butTextId], 6, GL_STATIC_DRAW, GL_STATIC_DRAW
      mov        [edi + Button.pEntityObj], eax
 
 
-     stdcall    CreateText, [pText], [txtTextId]
+     stdcall    CreateText, [pText], [txtTextId], GL_STATIC_DRAW, GL_STATIC_DRAW
      mov        [edi + Button.pTextObj], eax
 
      mov        ebx,  [edi + Button.pEntityObj]

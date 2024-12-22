@@ -15,6 +15,7 @@
         include         "../GraphicalEngine/DrawUI/ElementHandlers.asm"
         include         "../GraphicalEngine/DrawUI/Button.inc"
         include         "../GraphicalEngine/DrawUI/UIActions.asm"
+        include         "../Network/InitPlayers.asm"
 
 
 
@@ -60,8 +61,6 @@ proc Init uses esi
         mov     [resolutScale], eax
 
         stdcall InitDrawParams
-        stdcall InitTextures
-
 
         stdcall InitDrawUI
 
@@ -95,6 +94,9 @@ proc   InitTextures
 
      stdcall    InitTexture, shootFilePath
      mov        [shootTextID],eax
+
+     stdcall    InitTexture, hpBarFilePath
+     mov        [hpBarTextID],eax
 
        ret
 endp

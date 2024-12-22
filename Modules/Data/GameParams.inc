@@ -20,3 +20,6 @@ lastDrawTime            dd                      0
 
 mouseSpeed              GLfloat                 0.03
 
+
+playerCnt               dd                      ?
+

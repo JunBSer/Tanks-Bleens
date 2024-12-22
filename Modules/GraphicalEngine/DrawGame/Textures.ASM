@@ -8,6 +8,8 @@
         mainMenuFilePath            db     "Resources/Textures/MainMenu.bmp", 0
         subMenuFilePath             db     "Resources/Textures/SubMenu.bmp", 0
         buttonFilePath              db     "Resources/Textures/Button.bmp", 0
+        editFilePath                db     "Resources/Textures/edit.bmp", 0
+        hpBarFilePath               db     "Resources/Textures/hpBar.bmp", 0
 
         mainTextID               GLuint          0
         tankTextID               GLuint          0
@@ -17,6 +19,8 @@
         mMenuTextID              GLuint          0
         sMenuTextID              GLuint          0
         btnTextID                GLuint          0
+        editTextID               GLuint          0
+        hpBarTextID              GLuint          0
 
 proc    LinkTexture uses edi,\
         pTextureData, imgSizes

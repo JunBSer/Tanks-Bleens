@@ -1,5 +1,5 @@
 proc CreateMesh uses esi edi ebx,\
-     vertices, normals, textCoords, textureID, vertexCnt
+     vertices, normals, textCoords, textureID, vertexCnt, typeTextVBO, typeVertVBO
                           ;colors
      locals
      pMesh      dd      ?
@@ -45,7 +45,7 @@ proc CreateMesh uses esi edi ebx,\
      mul        ecx
      mov        [byteCnt],eax
 
-     invoke     glBufferData, GL_ARRAY_BUFFER,  eax, [vertices], GL_STATIC_DRAW
+     invoke     glBufferData, GL_ARRAY_BUFFER,  eax, [vertices], [typeVertVBO]
      cmp        dword [normals],0
      jne        .TripleCoordVAOP
 
@@ -64,7 +64,7 @@ proc CreateMesh uses esi edi ebx,\
      mov         eax,[vertexCnt]
      mov         ecx, 2*4
      mul         ecx
-     invoke      glBufferData, GL_ARRAY_BUFFER,  eax, [textCoords], GL_STATIC_DRAW
+     invoke      glBufferData, GL_ARRAY_BUFFER,  eax, [textCoords], [typeTextVBO]
 
      invoke     glVertexAttribPointer, 1, 2, GL_FLOAT, GL_FALSE,0,0
      invoke     glEnableVertexAttribArray, 1
@@ -261,7 +261,7 @@ proc    ReadObject uses edi ,\
         stdcall    Collision.ConvertAABBtoOBB, [pAABB]
         mov        [pOBB], eax
 
-        stdcall    CreateMesh, [edi+TempFileMesh.vertices], [edi+TempFileMesh.normals], [edi+TempFileMesh.textures], [textId], [edi+TempFileMesh.verticesCount]
+        stdcall    CreateMesh, [edi+TempFileMesh.vertices], [edi+TempFileMesh.normals], [edi+TempFileMesh.textures], [textId], [edi+TempFileMesh.verticesCount], GL_STATIC_DRAW, GL_STATIC_DRAW
 
         stdcall    CreateObject, eax, [pAABB], [pOBB]
 

@@ -70,6 +70,8 @@ proc   ProcessClick uses esi edi,\
        mov      dword [posY], eax
 
        mov      ecx, [stObjectsCnt]
+       cmp      ecx, 0
+       je       .Return
        mov      edi, [pStObjects]
 .CheckClickLoop:
        push     ecx
@@ -87,7 +89,9 @@ proc   ProcessClick uses esi edi,\
        cmp      dword [eax + 20], 0
        je       .Skip
 
+      ; int      3
        stdcall  dword [eax + 20], [esi + edi]
+
 
        jmp      .Return
 .Skip:
@@ -95,6 +99,7 @@ proc   ProcessClick uses esi edi,\
 
        loop     .CheckClickLoop
 
+       mov      dword [isEditActive], false
 
 .Return:
        ret
@@ -143,4 +148,76 @@ proc  IsCursorOverStObject uses esi,\
 .Return:
 
       ret
+endp
+
+
+proc TranslateChar,\
+     vKey
+
+     switch  [vKey]
+     case    .ProcessPoint,             0xBE
+     case    .ProcessBackspace,         VK_BACK
+     case    .ProcessZero,              0x30
+     case    .ProcessOne,               0x31
+     case    .ProcessTwo,               0x32
+     case    .ProcessThree,             0x33
+     case    .ProcessFour,              0x34
+     case    .ProcessFive,              0x35
+     case    .ProcessSix,               0x36
+     case    .ProcessSeven,             0x37
+     case    .ProcessEight,             0x38
+     case    .ProcessNine,              0x39
+     jmp     .ReturnZero
+
+.ProcessPoint:
+        mov     eax, 46
+        jmp     .Return
+
+.ProcessBackspace:
+        mov     eax, 08h
+        jmp     .Return
+
+.ProcessZero:
+        mov     eax, 48
+        jmp     .Return
+
+.ProcessOne:
+        mov     eax, 49
+        jmp     .Return
+
+.ProcessTwo:
+        mov     eax, 50
+        jmp     .Return
+
+.ProcessThree:
+        mov     eax, 51
+        jmp     .Return
+
+.ProcessFour:
+        mov     eax, 52
+        jmp     .Return
+
+.ProcessFive:
+        mov     eax, 53
+        jmp     .Return
+
+.ProcessSix:
+        mov     eax, 54
+        jmp     .Return
+
+.ProcessSeven:
+        mov     eax, 55
+        jmp     .Return
+
+.ProcessEight:
+        mov     eax, 56
+        jmp     .Return
+
+.ProcessNine:
+        mov     eax, 57
+        jmp     .Return
+.ReturnZero:
+        mov     eax, -1
+.Return:
+    ret
 endp

@@ -80,14 +80,28 @@ proc WindowProc,\
         jmp     .ReturnZero
 
 .KeyDown:
-        cmp     [wParam], VK_ESCAPE
-        jne     .ReturnZero
-
-        switch  [appState]
-        case    .RetToGameMenu,      1
-
+       ; int 3
+        switch  [wParam]
+        case    .ProcessEscape,     VK_ESCAPE
+        case    .ProcessEnter,      VK_RETURN
+        cmp      dword [isEditActive],  true
+        je       .UserInput
         jmp     .ReturnZero
 
+.ProcessEnter:
+        mov     dword [isEditActive], false
+        jmp     .ReturnZero
+.ProcessEscape:
+        switch  [appState]
+        case    .RetToGameMenu,      1
+        jmp     .ReturnZero
+.UserInput:
+        cmp      dword [activeEditHandler],0
+        je       .ReturnZero
+        stdcall  TranslateChar, [wParam]
+        stdcall  dword [activeEditHandler], eax
+
+        jmp     .ReturnZero
 .RetToGameMenu:
         stdcall  InitDrawGameMenu
         jmp     .ReturnZero
