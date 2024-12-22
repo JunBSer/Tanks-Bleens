@@ -13,14 +13,18 @@ endp
 proc Turret.Rotate uses edi esi ebx,\
      matrixTurret, pTank, turn
 
+        locals
+                yAngle          GLfloat         ?
+        endl
+
         mov     eax, [turn]
 
         mov     edi, [pTank]
         fld     dword [eax + Vector3.y]
         fsub    dword [edi + Tank.rotations + Vector3.y]
         fchs
-        fstp    dword [edi + Tank.turret + Turret.rotations + Vector3.y]
-        stdcall Matrix.Rotate, matrixR, [edi + Tank.turret + Turret.rotations + Vector3.y], 0.0, 1.0, 0.0
+        fstp    dword [yAngle]
+        stdcall Matrix.Rotate, matrixR, [yAngle], 0.0, 1.0, 0.0
 
         stdcall Matrix.Multiply, matrixR, [edi + Tank.pModelMatrix], [matrixTurret]
         ret
@@ -296,15 +300,6 @@ proc Camera.ChangeAngles uses edi,\                     ;+?
         fmul    [mouseSpeed]
         fchs
         fadd    [edi + Vector3.y]
-        fistp   dword [yAngle]
-        mov     eax, dword [yAngle]
-        mov     ecx, 360
-        add     eax, ecx
-        xor     edx, edx
-        div     ecx
-        push    edx
-        fild    dword [esp]
-        add     esp, 4
         fstp    [edi + Vector3.y]
 
         mov     eax, [windowHeightH]
