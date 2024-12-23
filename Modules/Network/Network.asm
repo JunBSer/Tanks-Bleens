@@ -96,7 +96,7 @@ proc Client.GetNumber
 
         invoke  recv, [sock], buf, MAX_BUF_SIZE, 0
         mov     [bufSize], eax
-        mov     eax, [buf]
+        mov     eax, dword [buf]
 
         ret
 endp

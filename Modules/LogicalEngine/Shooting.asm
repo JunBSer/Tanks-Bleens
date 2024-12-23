@@ -316,10 +316,11 @@ proc Player.Shoot uses esi edi ebx,\
      cmp        eax, -1
      je         .EndProcessing
 
+     mov        eax, -1
      cmp        dword [hitObjType], 0
      jne        .EndProcessing
 
-     stdcall    ProcessHit, [targets], [minInd]
+     stdcall    ProcessHitOnline, [targets], [minInd]
 
 .EndProcessing:
      mov        edi, [pfShoot]
@@ -352,3 +353,21 @@ proc ProcessHit uses esi,\
 
      ret
 endp
+
+
+proc ProcessHitOnline uses esi,\
+     pTargets, ind
+     locals
+         temp   dd      ?
+     endl
+
+     mov        esi, [pTargets]
+     mov        eax, [ind]
+     shl        eax, 2
+
+     mov        esi, [esi + eax]
+     mov        eax, [esi + Tank.id]
+
+     ret
+endp
+

@@ -131,9 +131,11 @@ endp
 proc    HostBtnHandler uses esi,\
         pObj
 
+
         stdcall  ReleaseButtons, [Buttons], ButtonsCnt
 
         stdcall  InitCreateBtns
+
         ret
 endp
 
@@ -144,6 +146,7 @@ proc    UsrBtnHandler uses esi,\
         stdcall  ReleaseStObj, [StatObjects], StatObjCnt
         stdcall  ReleaseButtons, [Buttons], ButtonsCnt
         stdcall  InitInputPage
+
 
         ret
 endp
@@ -174,6 +177,25 @@ endp
 
 proc    ConnectHandler uses esi,\
         pObj
+
+        stdcall Network.Start
+        stdcall Socket.Create
+        stdcall Socket.Connect
+        stdcall Client.GetNumber
+        mov     esi, eax
+
+        stdcall Glext.InitShaders, std_program, std_fragmentShader, std_frShaderFilePath, std_vertexShader, std_vrtxShaderFilePath
+
+        mov     dword [appState],1
+
+        stdcall MultP_InitDrawGame
+
+        stdcall InitPlayers
+
+        stdcall MakeMapping, [Targets], [tank], esi
+        mov     [map], eax
+
+        stdcall SpownPlayers, [map], esi
 
 
         ret
