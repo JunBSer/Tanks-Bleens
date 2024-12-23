@@ -55,6 +55,10 @@ proc Server.Start uses edi esi ebx,\
         mov     dword [StartupInfo.cb], sizeof.STARTUPINFO
         memset  ProcessInformation, 0, sizeof.PROCESS_INFORMATION
 
+        mov     eax, [playerCnt]
+        add     eax, '0'
+        mov     [CommandLine + 30], al
+
         invoke  CreateProcess, ebx, CommandLine, ebx, ebx, ebx, ebx, ebx, ebx, StartupInfo, ProcessInformation
         ret
 endp
@@ -148,26 +152,27 @@ proc Client.GetData uses esi edi ebx,\
         mov     ebx, sizeof.PlayerData
         imul    ebx, eax
 
-        mov     eax, dword [buf + ebx + PlayerData.id]
-        ;stdcall GetTankByID, eax
+        mov     eax, dword [buf + 12 + ebx + PlayerData.id]
+        stdcall GetTankByID, eax
         mov     edi, eax        ; edi <- tank by id
 
-        lea     eax, dword [buf + ebx + PlayerData.position]
+        lea     eax, dword [buf + 12 + ebx + PlayerData.position]
         lea     edx, [edi + Tank.position]
         stdcall Vector3.Copy, edx, eax
 
-        lea     eax, dword [buf + ebx + PlayerData.bodyRot]
+        lea     eax, dword [buf + 12 + ebx + PlayerData.bodyRot]
         lea     edx, [edi + Tank.rotations]
         stdcall Vector3.Copy, edx, eax
 
-        lea     eax, dword [buf + ebx + PlayerData.turretRot]
+        lea     eax, dword [buf + 12 + ebx + PlayerData.turretRot]
         lea     edx, [edi + Tank.turret + Turret.rotations]
         stdcall Vector3.Copy, edx, eax
 
-        mov     eax, dword [buf + ebx + PlayerData.hp]
+        mov     eax, dword [buf + 12 + ebx + PlayerData.hp]
         mov     dword [edi + Tank.hp], eax
 
         pop     ecx
+        dec     ecx
         jmp     .Loop
 .ExitLoop:
 
