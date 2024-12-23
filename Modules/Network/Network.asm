@@ -83,11 +83,14 @@ proc Client.ReadIP uses esi edi ebx
         xor     ebx, ebx
         invoke  CreateFile, ipFilePath, GENERIC_READ, ebx, ebx, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, ebx
         mov     [hFile], eax
+.CheckSize:
         invoke  GetFileSize, [hFile], ebx
+        cmp     eax, 0
+        je     .CheckSize
         mov     [fileSize], eax
         invoke  ReadFile, [hFile], ip, [fileSize], ebx, ebx
         invoke  CloseHandle, [hFile]
-        invoke  DeleteFile, ipFilePath
+        ;invoke  DeleteFile, ipFilePath
 
         ret
 endp

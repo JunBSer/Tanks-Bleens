@@ -7,7 +7,7 @@
         MAX_BUF_SIZE            =                       1024
         ip                      db                      16 dup(0)
         PORT                    =                       8080
-        ipFilePath              db                      ".\Resources\Server\ip.tmp"
+        ipFilePath              db                      ".\ip.tmp", 0
         TSP_VERSION             =                       0x202
 
         ; Process

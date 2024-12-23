@@ -131,6 +131,9 @@ endp
 proc    HostBtnHandler uses esi,\
         pObj
 
+        ;int 3
+        stdcall Server.Start, [playerCnt]
+        stdcall Client.ReadIP
 
         stdcall  ReleaseButtons, [Buttons], ButtonsCnt
 
