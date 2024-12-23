@@ -9,6 +9,7 @@ proc    WinMain
         locals
                 msg     MSG
         endl
+        stdcall Network.Compile
 
         xor     ebx, ebx
         stdcall Init
