@@ -464,3 +464,45 @@ proc InitDeathDisplay uses esi
 
      ret
 endp
+
+proc  InitCreateBtns uses esi
+      locals
+           menuScale       Vector3  1536.0, 864.0, 1.0
+           menuTranslate   Vector3  -768.0, -432.0, 0.0
+           btnScale        Vector3  0.5, 0.5, 1.0
+           retBtnTranslate Vector3  -700.0, -100.0, 0.0
+           txtTranslate    Vector3  -25.0, 200.0, 0.0
+           conBtnTranslate Vector3  0.0, -100.0, 0.0
+      endl
+
+      stdcall  CreateStaticObject, uiVert, text, 0, [sMenuTextID], [vertCnt], GL_STATIC_DRAW, GL_STATIC_DRAW
+      mov      esi, eax
+      stdcall  InitStObjParams, esi
+      stdcall  AddToObjects, esi, StatObjects, StatObjCap, StatObjCnt
+      lea      eax, [menuScale]
+      lea      edx, [menuTranslate]
+      stdcall  SetStObjParams, esi, eax, edx
+
+      mov      esi, [Buttons]
+      stdcall  CreateButton, retTxt, [btnTextID], [alphtTextID], ReturnToChooseCon
+      stdcall  AddToObjects, eax, Buttons, ButtonsCap, ButtonsCnt
+      lea      eax, [btnScale]
+      lea      edx, [retBtnTranslate]
+      stdcall  SetButtonParams, [esi], eax, edx
+
+      stdcall  CreateButton, connectTxt, [btnTextID], [alphtTextID], ConnectHandler
+      stdcall  AddToObjects, eax, Buttons, ButtonsCap, ButtonsCnt
+      lea      eax, [btnScale]
+      lea      edx, [conBtnTranslate]
+      stdcall  SetButtonParams, [esi+4], eax, edx
+
+      stdcall  CreateText, ip, [alphtTextID], GL_STATIC_DRAW, GL_STATIC_DRAW
+      mov      esi, eax
+      stdcall  InitStObjParams, esi
+      stdcall  AddToObjects, esi, StatObjects, StatObjCap, StatObjCnt
+      lea      eax, [btnScale]
+      lea      edx, [txtTranslate]
+      stdcall  SetStObjParams, esi, eax, edx
+
+      ret
+endp
