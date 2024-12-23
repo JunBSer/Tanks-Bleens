@@ -34,7 +34,9 @@
         hpBar                    dd              ?
         lastHp                   dd              ?
 
-proc InitDrawGame  uses edi
+        map                      dd              ?
+
+proc SingleP_InitDrawGame  uses edi
 
      locals
           aspect          dd              ?
@@ -111,6 +113,72 @@ endp
 
 
 
+proc MultP_InitDrawGame  uses edi
+
+     locals
+          aspect          dd              ?
+     endl
+
+;GetUniforms for std shader program
+     stdcall    InitStdProgUniforms, [std_program]
+;Init objArr
+     mov         eax, 4
+     mov         [DinObjCap],eax
+     shl         eax,2
+     malloc      eax
+     mov         [DinObjects], eax
+     mov         [DinObjCnt], 0
+
+
+;Init TargetArr
+     mov         eax, 4
+     mov         [TargetCap],eax
+     shl         eax,2
+     malloc      eax
+     mov         [Targets],eax
+     mov         [TargetCnt],0
+
+
+;Init camera
+     malloc  sizeof.Camera
+     mov     [mainCamera], eax
+
+     lea     eax, [aspect]
+     stdcall InitGameDrawParams, eax
+     stdcall Camera.Init, rotations1, positionModel1, stdOffset, [mainCamera]
+
+;Init matrices
+     stdcall     MapInit
+
+
+     invoke  glMatrixMode, GL_PROJECTION
+     invoke  glLoadIdentity
+
+     stdcall Matrix.Projection, [aspect], [fovY], [zNear], [zFar]
+
+
+;Add player's tank
+
+     stdcall CreateTank
+     mov     [tank], eax
+
+;Init static objects
+     stdcall CreateStaticObject, vert, text, normals, [crossTextID], [vertCnt], GL_STATIC_DRAW, GL_STATIC_DRAW
+     mov     [crosshair], eax
+
+;Init shoot animation
+     stdcall CreateStaticObject, vert, text, normals, [shootTextID], [vertCnt], GL_STATIC_DRAW, GL_STATIC_DRAW
+     mov     [shootAnimObj], eax
+
+     stdcall  CreateStaticObject, uiVert, text, 0, [hpBarTextID], [vertCnt], GL_STATIC_DRAW, GL_STATIC_DRAW
+     mov      [hpBar], eax
+
+     stdcall  InitHPBar, [hpBar]
+
+        ret
+endp
+
+
 proc DrawObject uses edi,\
      obj
      mov        edi, [obj]
@@ -181,6 +249,8 @@ proc DrawGame uses esi edi ebx
 
 ;Draw  Targets
         mov     ecx,[TargetCnt]
+        cmp     ecx, 0
+        je      .Return
         mov     edi, [Targets]
 .DrawTargetLoop:
         mov        esi, [TargetCnt]

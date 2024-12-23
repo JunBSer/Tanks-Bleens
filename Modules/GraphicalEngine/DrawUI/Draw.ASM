@@ -328,12 +328,11 @@ proc InitServerConBtns uses esi
             userBtnTranslate   Vector3  -650.0,  50.0, 0.0
             retBtnTranslate    Vector3  -700.0,  -100.0, 0.0
      endl
-
+         mov     esi, [Buttons]
         stdcall  CreateButton, createGTxt, [btnTextID], [alphtTextID], HostBtnHandler
         stdcall  AddToObjects, eax, Buttons, ButtonsCap, ButtonsCnt
         lea     eax, [btnScale]
         lea     edx, [hostBtnTranslate]
-        mov     esi, [Buttons]
         stdcall SetButtonParams, [esi], eax, edx
 
 
