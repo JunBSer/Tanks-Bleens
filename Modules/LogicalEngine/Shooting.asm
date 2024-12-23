@@ -320,7 +320,7 @@ proc Player.Shoot uses esi edi ebx,\
      cmp        dword [hitObjType], 0
      jne        .EndProcessing
 
-     stdcall    ProcessHitOnline, [targets], [minInd]
+     stdcall    ProcessHit, [targets], [minInd]; ProcessHitOnline
 
 .EndProcessing:
      mov        edi, [pfShoot]

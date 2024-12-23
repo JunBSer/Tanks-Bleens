@@ -42,7 +42,21 @@ proc    TwoPlButtonHandler uses esi,\
 
         mov      dword [playerCnt], 2
 
-        stdcall  InitServerConBtns
+        stdcall Glext.InitShaders, std_program, std_fragmentShader, std_frShaderFilePath, std_vertexShader, std_vrtxShaderFilePath
+
+        mov     dword [appState],1
+
+        stdcall MultP_InitDrawGame
+
+        stdcall InitPlayers
+
+        stdcall MakeMapping, [Targets], [tank], 0
+        mov     [map], eax
+
+        stdcall SpownPlayers, [map], 0
+
+
+        ;stdcall  InitServerConBtns
 
         ret
 endp
@@ -54,7 +68,20 @@ proc    FourPlButtonHandler uses esi,\
 
         mov      dword [playerCnt], 4
 
-        stdcall  InitServerConBtns
+        stdcall Glext.InitShaders, std_program, std_fragmentShader, std_frShaderFilePath, std_vertexShader, std_vrtxShaderFilePath
+
+        mov     dword [appState],1
+
+        stdcall MultP_InitDrawGame
+
+        stdcall InitPlayers
+
+        stdcall MakeMapping, [Targets], [tank], 0
+        mov     [map], eax
+
+        stdcall SpownPlayers, [map], 0
+
+       ; stdcall  InitServerConBtns
         ret
 endp
 
@@ -131,7 +158,7 @@ endp
 proc    HostBtnHandler uses esi,\
         pObj
 
-
+       ;int     3
         stdcall  ReleaseButtons, [Buttons], ButtonsCnt
 
         stdcall  InitCreateBtns
@@ -182,7 +209,11 @@ proc    ConnectHandler uses esi,\
         stdcall Socket.Create
         stdcall Socket.Connect
         stdcall Client.GetNumber
+        int     3
         mov     esi, eax
+
+        stdcall  ReleaseButtons, [Buttons], ButtonsCnt
+        stdcall  ReleaseStObj, [StatObjects], StatObjCnt
 
         stdcall Glext.InitShaders, std_program, std_fragmentShader, std_frShaderFilePath, std_vertexShader, std_vrtxShaderFilePath
 

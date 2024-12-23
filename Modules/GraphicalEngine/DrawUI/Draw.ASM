@@ -387,7 +387,7 @@ proc  InitInputPage uses esi
       lea      edx, [retBtnTranslate]
       stdcall  SetButtonParams, [esi+4], eax, edx
 
-        stdcall  CreateButton, connectTxt, [btnTextID], [alphtTextID], ConnectHandler
+      stdcall  CreateButton, connectTxt, [btnTextID], [alphtTextID], ConnectHandler
       stdcall  AddToObjects, eax, Buttons, ButtonsCap, ButtonsCnt
       lea      eax, [btnScale]
       lea      edx, [conBtnTranslate]

@@ -4,8 +4,8 @@ proc Player.Move uses ebx edi esi
         stdcall MoveCamera, [mainCamera], [tank]
         stdcall MoveTank,   [tank], [mainCamera]
         stdcall Player.Shoot, [tank], fShoot, [Targets], [TargetCnt], [DinObjects], [DinObjCnt]
-        stdcall Client.SendData, [tank], eax
-        stdcall Client.GetData, [tank]
+       ; stdcall Client.SendData, [tank], eax
+       ; stdcall Client.GetData, [tank]
 .Return:
         ret
 endp
