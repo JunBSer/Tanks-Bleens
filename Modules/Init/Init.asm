@@ -64,6 +64,8 @@ proc Init uses esi
 
         stdcall InitDrawUI
 
+        stdcall InitTextures
+
         ret
 endp
 

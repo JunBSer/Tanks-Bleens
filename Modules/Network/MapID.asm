@@ -4,7 +4,6 @@ proc  MakeMapping uses esi edi ebx,\
       locals
             map         dd      ?
 
-            temp        dd      ?
       endl
 
             malloc      4*4
@@ -45,4 +44,15 @@ proc  MakeMapping uses esi edi ebx,\
             mov        eax, edi
 
       ret
+endp
+
+
+proc GetTankByID uses esi,\
+     ID
+
+     mov        esi, [map]
+     mov        edx, [ID]
+     shl        edx, 2
+     mov        eax, [esi + edx]
+     ret
 endp

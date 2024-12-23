@@ -29,11 +29,9 @@ proc    OnePlButtonHandler uses esi,\
         mov      dword [appState],1
         mov      dword [playerCnt], 1
 
-        stdcall InitTextures
-
         stdcall Glext.InitShaders, std_program, std_fragmentShader, std_frShaderFilePath, std_vertexShader, std_vrtxShaderFilePath
 
-        stdcall InitDrawGame
+        stdcall SingleP_InitDrawGame
         ret
 endp
 
@@ -41,7 +39,6 @@ proc    TwoPlButtonHandler uses esi,\
         pObj
 
         stdcall  ReleaseButtons, [Buttons], ButtonsCnt
-
 
         mov      dword [playerCnt], 2
 
@@ -66,6 +63,7 @@ proc    ReturnGameButtonHandler uses esi,\
         pObj
 
         stdcall  ReleaseButtons, [Buttons], ButtonsCnt
+        stdcall  ReleaseStObj, [StatObjects], StatObjCnt
 
         mov      dword [appState],1
 
@@ -98,17 +96,28 @@ endp
 proc    MenuButtonHandler uses esi,\
         pObj
 
-        stdcall  ReleaseButtons, [Buttons], ButtonsCnt
-        stdcall  ReleaseStObj, [StatObjects], StatObjCnt
+        stdcall    ReleaseButtons, [Buttons], ButtonsCnt
+        stdcall    ReleaseStObj, [StatObjects], StatObjCnt
 
-        mov      dword [appState], 0
+        mov        dword [appState], 0
 
         invoke     glBindVertexArray, 0
         invoke     glBindBuffer, GL_ARRAY_BUFFER,0
         invoke     glUseProgram, ebx
 
         stdcall    ReleaseObjects, [DinObjects], DinObjCnt
-        free       [DinObjects]
+        free       dword [DinObjects]
+;-----------------------------------------------------
+        stdcall    ReleaseTankRes, [tank]
+        stdcall    ReleaseStObjRes, [crosshair]
+        stdcall    ReleaseStObjRes, [hpBar]
+        free       dword [mainCamera]
+
+
+;If what just delete this
+        stdcall    ReleaseTanks, [Targets], TargetCnt
+        free       dword [Targets]
+;______________________________________________________
 
         invoke     glDeleteShader, [std_fragmentShader]
         invoke     glDeleteShader, [std_vertexShader]
@@ -125,10 +134,27 @@ proc    HostBtnHandler uses esi,\
 
 
 
+        stdcall  ReleaseStObj, [StatObjects], StatObjCnt
+        stdcall  ReleaseButtons, [Buttons], ButtonsCnt
+
+
+
+
         stdcall Glext.InitShaders, std_program, std_fragmentShader, std_frShaderFilePath, std_vertexShader, std_vrtxShaderFilePath
 
-        stdcall InitDrawGame
+        mov     dword [appState],1
+       ; int     3
 
+        stdcall MultP_InitDrawGame
+
+        stdcall InitPlayers
+
+
+        mov     eax, [tank]
+        stdcall MakeMapping, [Targets], [tank], 0
+        mov     [map], eax
+
+        stdcall SpownPlayers, [map], 0
         ret
 endp
 
@@ -141,10 +167,12 @@ proc    UsrBtnHandler uses esi,\
         stdcall  ReleaseButtons, [Buttons], ButtonsCnt
         stdcall  InitInputPage
 
-        ;stdcall InitTextures
-        ;stdcall Glext.InitShaders, std_program, std_fragmentShader, std_frShaderFilePath, std_vertexShader, std_vrtxShaderFilePath
+        stdcall  MultP_InitDrawGame
 
-        ;stdcall InitDrawGame
+
+        stdcall Glext.InitShaders, std_program, std_fragmentShader, std_frShaderFilePath, std_vertexShader, std_vrtxShaderFilePath
+
+
         ret
 endp
 
