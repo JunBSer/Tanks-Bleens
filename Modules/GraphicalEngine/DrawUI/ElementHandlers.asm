@@ -130,45 +130,22 @@ endp
 
 proc    HostBtnHandler uses esi,\
         pObj
-;ServPrep:   ...
-
 
 
         stdcall  ReleaseStObj, [StatObjects], StatObjCnt
         stdcall  ReleaseButtons, [Buttons], ButtonsCnt
 
 
-
-
-        stdcall Glext.InitShaders, std_program, std_fragmentShader, std_frShaderFilePath, std_vertexShader, std_vrtxShaderFilePath
-
-        mov     dword [appState],1
-       ; int     3
-
-        stdcall MultP_InitDrawGame
-
-        stdcall InitPlayers
-
-
-        mov     eax, [tank]
-        stdcall MakeMapping, [Targets], [tank], 0
-        mov     [map], eax
-
-        stdcall SpownPlayers, [map], 0
         ret
 endp
 
 
 proc    UsrBtnHandler uses esi,\
         pObj
-;ServPrep:   ...
 
         stdcall  ReleaseStObj, [StatObjects], StatObjCnt
         stdcall  ReleaseButtons, [Buttons], ButtonsCnt
         stdcall  InitInputPage
-
-        stdcall  MultP_InitDrawGame
-
 
         stdcall Glext.InitShaders, std_program, std_fragmentShader, std_frShaderFilePath, std_vertexShader, std_vrtxShaderFilePath
 
@@ -202,6 +179,25 @@ endp
 
 proc    ConnectHandler uses esi,\
         pObj
+
+        stdcall Network.Start
+        stdcall Socket.Create
+        stdcall Socket.Connect
+        stdcall Client.GetNumber
+        mov     esi, eax
+
+        stdcall Glext.InitShaders, std_program, std_fragmentShader, std_frShaderFilePath, std_vertexShader, std_vrtxShaderFilePath
+
+        mov     dword [appState],1
+
+        stdcall MultP_InitDrawGame
+
+        stdcall InitPlayers
+
+        stdcall MakeMapping, [Targets], [tank], esi
+        mov     [map], eax
+
+        stdcall SpownPlayers, [map], esi
 
 
         ret
