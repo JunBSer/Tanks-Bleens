@@ -496,7 +496,7 @@ proc  InitCreateBtns uses esi
       lea      edx, [conBtnTranslate]
       stdcall  SetButtonParams, [esi+4], eax, edx
 
-      stdcall  CreateText, ip, [alphtTextID], GL_STATIC_DRAW, GL_STATIC_DRAW
+      stdcall  CreateText, [ipAddr], [alphtTextID], GL_STATIC_DRAW, GL_STATIC_DRAW
       mov      esi, eax
       stdcall  InitStObjParams, esi
       stdcall  AddToObjects, esi, StatObjects, StatObjCap, StatObjCnt

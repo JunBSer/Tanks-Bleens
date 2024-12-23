@@ -133,11 +133,13 @@ proc    HostBtnHandler uses esi,\
 
         ;int 3
         stdcall Server.Start, [playerCnt]
+
         stdcall Client.ReadIP
 
         stdcall  ReleaseButtons, [Buttons], ButtonsCnt
 
         stdcall  InitCreateBtns
+
 
         ret
 endp
@@ -184,6 +186,7 @@ proc    ConnectHandler uses esi,\
         stdcall Network.Start
         stdcall Socket.Create
         stdcall Socket.Connect
+
         stdcall Client.GetNumber
         mov     esi, eax
 
