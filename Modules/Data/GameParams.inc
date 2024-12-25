@@ -23,3 +23,5 @@ mouseSpeed              GLfloat                 0.03
 
 playerCnt               dd                      ?
 
+lastRespawn             dd                      ?
+

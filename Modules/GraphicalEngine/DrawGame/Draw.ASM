@@ -248,6 +248,39 @@ proc DrawGame uses esi edi ebx
 
 
 ;Draw  Targets
+        invoke  GetTickCount
+        mov     edx, eax
+        sub     edx, [lastRespawn]
+        cmp     edx, 3000
+        jb      .StartDrawStatic
+        mov     [lastRespawn], eax
+
+
+
+        mov     ecx,[TargetCnt]
+        cmp     ecx, 0
+        je      .Return
+        mov     edi, [Targets]
+.RespawnLoop:
+        mov        esi, [TargetCnt]
+        sub        esi, ecx
+        shl        esi,2
+
+        push       ecx
+
+        mov        eax, [esi + edi]
+       ; cmp        dword [eax + Tank.hp], 0
+       ; jl        .SkipRespawn
+        mov        [eax + Tank.hp], 100
+ .SkipRespawn:
+        pop     ecx
+
+        loop    .RespawnLoop
+
+
+
+.StartDrawStatic:
+
         mov     ecx,[TargetCnt]
         cmp     ecx, 0
         je      .Return

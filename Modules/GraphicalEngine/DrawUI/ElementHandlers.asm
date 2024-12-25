@@ -26,21 +26,7 @@ proc    OnePlButtonHandler uses esi,\
         stdcall  ReleaseButtons, [Buttons], ButtonsCnt
         stdcall  ReleaseStObj, [StatObjects], StatObjCnt
 
-        mov      dword [appState],1
-        mov      dword [playerCnt], 1
-
-        stdcall Glext.InitShaders, std_program, std_fragmentShader, std_frShaderFilePath, std_vertexShader, std_vrtxShaderFilePath
-
-        stdcall SingleP_InitDrawGame
-        ret
-endp
-
-proc    TwoPlButtonHandler uses esi,\
-        pObj
-
-        stdcall  ReleaseButtons, [Buttons], ButtonsCnt
-
-        mov      dword [playerCnt], 2
+         mov      dword [playerCnt], 4
 
         stdcall Glext.InitShaders, std_program, std_fragmentShader, std_frShaderFilePath, std_vertexShader, std_vrtxShaderFilePath
 
@@ -54,9 +40,17 @@ proc    TwoPlButtonHandler uses esi,\
         mov     [map], eax
 
         stdcall SpownPlayers, [map], 0
+        ret
+endp
 
+proc    TwoPlButtonHandler uses esi,\
+        pObj
 
-        ;stdcall  InitServerConBtns
+        stdcall  ReleaseButtons, [Buttons], ButtonsCnt
+
+        mov      dword [playerCnt], 2
+
+        stdcall  InitServerConBtns
 
         ret
 endp
@@ -68,20 +62,7 @@ proc    FourPlButtonHandler uses esi,\
 
         mov      dword [playerCnt], 4
 
-        stdcall Glext.InitShaders, std_program, std_fragmentShader, std_frShaderFilePath, std_vertexShader, std_vrtxShaderFilePath
-
-        mov     dword [appState],1
-
-        stdcall MultP_InitDrawGame
-
-        stdcall InitPlayers
-
-        stdcall MakeMapping, [Targets], [tank], 0
-        mov     [map], eax
-
-        stdcall SpownPlayers, [map], 0
-
-       ; stdcall  InitServerConBtns
+        stdcall  InitServerConBtns
         ret
 endp
 
@@ -158,10 +139,15 @@ endp
 proc    HostBtnHandler uses esi,\
         pObj
 
-       ;int     3
+        ;int 3
+        ;stdcall Server.Start, [playerCnt]
+
+        ;stdcall Client.ReadIP
+
         stdcall  ReleaseButtons, [Buttons], ButtonsCnt
 
         stdcall  InitCreateBtns
+
 
         ret
 endp
@@ -208,12 +194,9 @@ proc    ConnectHandler uses esi,\
         stdcall Network.Start
         stdcall Socket.Create
         stdcall Socket.Connect
-        stdcall Client.GetNumber
-        int     3
-        mov     esi, eax
 
-        stdcall  ReleaseButtons, [Buttons], ButtonsCnt
-        stdcall  ReleaseStObj, [StatObjects], StatObjCnt
+        stdcall Client.GetNumber
+        mov     esi, eax
 
         stdcall Glext.InitShaders, std_program, std_fragmentShader, std_frShaderFilePath, std_vertexShader, std_vrtxShaderFilePath
 
